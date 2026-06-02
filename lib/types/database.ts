@@ -221,3 +221,18 @@ export type TimelineItem =
   | { type: "flight";        sortKey: string; data: Flight }
   | { type: "accommodation"; sortKey: string; data: Accommodation }
   | { type: "activity";      sortKey: string; data: Activity }
+
+export type PersonalTicket = {
+  id: string
+  flight_id: string
+  trip_id: string
+  user_id: string
+  airline: string | null
+  flight_number: string | null
+  seat: string | null
+  pnr: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type PersonalTicketInsert = Omit<PersonalTicket, 'id' | 'created_at'>

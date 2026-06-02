@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import Navbar from "@/components/layout/Navbar";
 import Timeline from "@/components/timeline/Timeline";
 import { formatDate } from "@/lib/utils/date";
+import ShareButton from "@/components/trips/ShareButton";
 
 interface Props {
   params: Promise<{ tripId: string }>;
@@ -56,21 +57,25 @@ export default async function TripPage({ params }: Props) {
         </Link>
 
         {/* Trip header */}
+        {/* Trip header */}
         <div className="mb-7">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h1 className="text-2xl font-semibold text-stone-900">{trip.name}</h1>
               <p className="text-stone-500 mt-0.5">{trip.destination}</p>
             </div>
-            <Link
-              href={`/trips/${trip.id}/edit`}
-              className="btn-ghost text-sm flex-shrink-0"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
-              Editar
-            </Link>
+            <div className="flex items-center gap-2">
+              <ShareButton shareToken={trip.share_token} />
+              <Link
+                href={`/trips/${trip.id}/edit`}
+                className="btn-ghost text-sm flex-shrink-0"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Editar
+              </Link>
+            </div>
           </div>
 
           {/* Meta row */}
