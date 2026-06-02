@@ -9,6 +9,31 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          id: string
+          first_name: string | null
+          last_name: string | null
+          nickname: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          first_name?: string | null
+          last_name?: string | null
+          nickname?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          first_name?: string | null
+          last_name?: string | null
+          nickname?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       trips: {
         Row: {
           id: string
@@ -188,6 +213,40 @@ export interface Database {
           }
         ]
       }
+      personal_tickets: {
+        Row: {
+          id: string
+          flight_id: string
+          trip_id: string
+          user_id: string
+          airline: string | null
+          flight_number: string | null
+          seat: string | null
+          pnr: string | null
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          flight_id: string
+          trip_id: string
+          user_id: string
+          airline?: string | null
+          flight_number?: string | null
+          seat?: string | null
+          pnr?: string | null
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          airline?: string | null
+          flight_number?: string | null
+          seat?: string | null
+          pnr?: string | null
+          notes?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
@@ -196,6 +255,8 @@ export interface Database {
 }
 
 // ─── Convenience aliases ──────────────────────────────────────────────────────
+
+export type Profile            = Database["public"]["Tables"]["profiles"]["Row"]
 
 export type Trip               = Database["public"]["Tables"]["trips"]["Row"]
 export type TripInsert         = Database["public"]["Tables"]["trips"]["Insert"]
@@ -215,24 +276,12 @@ export type Activity           = Database["public"]["Tables"]["activities"]["Row
 export type ActivityInsert     = Database["public"]["Tables"]["activities"]["Insert"]
 export type ActivityUpdate     = Database["public"]["Tables"]["activities"]["Update"]
 
+export type PersonalTicket     = Database["public"]["Tables"]["personal_tickets"]["Row"]
+export type PersonalTicketInsert = Database["public"]["Tables"]["personal_tickets"]["Insert"]
+
 // ─── Timeline union type ──────────────────────────────────────────────────────
 
 export type TimelineItem =
   | { type: "flight";        sortKey: string; data: Flight }
   | { type: "accommodation"; sortKey: string; data: Accommodation }
   | { type: "activity";      sortKey: string; data: Activity }
-
-export type PersonalTicket = {
-  id: string
-  flight_id: string
-  trip_id: string
-  user_id: string
-  airline: string | null
-  flight_number: string | null
-  seat: string | null
-  pnr: string | null
-  notes: string | null
-  created_at: string
-}
-
-export type PersonalTicketInsert = Omit<PersonalTicket, 'id' | 'created_at'>

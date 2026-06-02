@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
@@ -9,10 +10,14 @@ import Input from "@/components/ui/Input";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -26,7 +31,7 @@ export default function LoginPage() {
     const supabase = createClient();
 
     if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -35,7 +40,14 @@ export default function LoginPage() {
       });
       if (error) {
         setError(error.message);
-      } else {
+      } else if (data.user) {
+        // Guardar perfil
+        await supabase.from("profiles").upsert({
+          id: data.user.id,
+          first_name: firstName,
+          last_name: lastName,
+          nickname: nickname,
+        });
         setSuccessMsg(
           "Revisá tu correo para confirmar tu cuenta. Luego podés iniciar sesión."
         );
@@ -52,7 +64,8 @@ export default function LoginPage() {
             : error.message
         );
       } else {
-        router.push("/dashboard");
+        const next = searchParams.get("next") ?? "/dashboard";
+        router.push(next);
         router.refresh();
       }
     }
@@ -96,6 +109,39 @@ export default function LoginPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {mode === "signup" && (
+              <>
+                <div className="flex gap-3">
+                  <Input
+                    label="Nombre"
+                    type="text"
+                    placeholder="Juan"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    autoComplete="given-name"
+                  />
+                  <Input
+                    label="Apellido"
+                    type="text"
+                    placeholder="García"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    autoComplete="family-name"
+                  />
+                </div>
+                <Input
+                  label="Apodo"
+                  type="text"
+                  placeholder="juanchi"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  required
+                  autoComplete="nickname"
+                />
+              </>
+            )}
             <Input
               label="Email"
               type="email"

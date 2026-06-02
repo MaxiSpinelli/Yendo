@@ -29,16 +29,38 @@ export default async function TripPage({ params }: Props) {
   if (!trip) notFound();
 
   // Fetch all items in parallel
-  const [flightsRes, accommodationsRes, activitiesRes] = await Promise.all([
+  const [flightsRes, accommodationsRes, activitiesRes, membersRes, ownerProfileRes] = await Promise.all([
     supabase.from("flights").select("*").eq("trip_id", tripId).order("departure_at"),
     supabase.from("accommodations").select("*").eq("trip_id", tripId).order("checkin_at"),
     supabase.from("activities").select("*").eq("trip_id", tripId).order("starts_at"),
+    supabase.from("trip_members").select("user_id").eq("trip_id", tripId),
+    supabase.from("profiles").select("nickname, first_name").eq("id", trip.owner_id).single(),
   ]);
 
   const flights = flightsRes.data ?? [];
   const accommodations = accommodationsRes.data ?? [];
   const activities = activitiesRes.data ?? [];
   const totalItems = flights.length + accommodations.length + activities.length;
+
+  // Traer perfiles de los miembros
+  const memberIds = (membersRes.data ?? []).map((m) => m.user_id);
+  let memberProfiles: { id: string; nickname: string | null; first_name: string | null }[] = [];
+  if (memberIds.length > 0) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, nickname, first_name")
+      .in("id", memberIds);
+    memberProfiles = data ?? [];
+  }
+
+  // Owner profile
+  const ownerProfile = ownerProfileRes.data;
+
+  // Todos los participantes: owner + miembros
+  const allParticipants = [
+    { id: trip.owner_id, nickname: ownerProfile?.nickname, first_name: ownerProfile?.first_name, isOwner: true },
+    ...memberProfiles.map((p) => ({ ...p, isOwner: false })),
+  ];
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -56,7 +78,6 @@ export default async function TripPage({ params }: Props) {
           Mis viajes
         </Link>
 
-        {/* Trip header */}
         {/* Trip header */}
         <div className="mb-7">
           <div className="flex items-start justify-between gap-3">
@@ -89,6 +110,28 @@ export default async function TripPage({ params }: Props) {
             <span className="text-stone-300">·</span>
             <span>{totalItems} {totalItems === 1 ? "elemento" : "elementos"}</span>
           </div>
+
+          {/* Participantes */}
+          {allParticipants.length > 0 && (
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
+              {allParticipants.map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center gap-1.5 bg-white border border-stone-200 rounded-full px-3 py-1"
+                >
+                  <div className="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center text-xs font-semibold text-brand-700">
+                    {(p.nickname ?? p.first_name ?? "?")[0].toUpperCase()}
+                  </div>
+                  <span className="text-xs text-stone-700">
+                    {p.nickname ?? p.first_name ?? "Sin nombre"}
+                  </span>
+                  {p.isOwner && (
+                    <span className="text-xs text-stone-400">👑</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Timeline (client component) */}

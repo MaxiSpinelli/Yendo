@@ -19,6 +19,9 @@ export default async function JoinTripPage({ params }: Props) {
     .eq("share_token", token)
     .single();
 
+  console.log("token:", token);
+  console.log("trip:", trip);
+
   if (!trip) redirect("/dashboard");
 
   // Si ya es el owner, ir directo
