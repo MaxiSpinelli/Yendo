@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Flight } from "@/lib/types/database";
+import type { Flight, PersonalTicket } from "@/lib/types/database";
 import { formatDateTime } from "@/lib/utils/date";
 import Modal from "@/components/ui/Modal";
 import FlightForm from "@/components/forms/FlightForm";
@@ -16,12 +16,81 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
   const supabase = createClient();
   const [editOpen, setEditOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [ticket, setTicket] = useState<PersonalTicket | null>(null);
+  const [ticketOpen, setTicketOpen] = useState(false);
+  const [ticketForm, setTicketForm] = useState({
+    airline: "",
+    flight_number: "",
+    seat: "",
+    pnr: "",
+    notes: "",
+  });
+  const [savingTicket, setSavingTicket] = useState(false);
+
+  useEffect(() => {
+    loadTicket();
+  }, [flight.id]);
+
+  async function loadTicket() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase
+      .from("personal_tickets")
+      .select("*")
+      .eq("flight_id", flight.id)
+      .eq("user_id", user.id)
+      .single();
+    if (data) {
+      setTicket(data);
+      setTicketForm({
+        airline: data.airline ?? "",
+        flight_number: data.flight_number ?? "",
+        seat: data.seat ?? "",
+        pnr: data.pnr ?? "",
+        notes: data.notes ?? "",
+      });
+    }
+  }
 
   async function handleDelete() {
     if (!confirm("¿Eliminar este vuelo?")) return;
     setDeleting(true);
     await supabase.from("flights").delete().eq("id", flight.id);
     onRefresh();
+  }
+
+  async function handleSaveTicket() {
+    setSavingTicket(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    if (ticket) {
+      await supabase
+        .from("personal_tickets")
+        .update(ticketForm)
+        .eq("id", ticket.id);
+    } else {
+      await supabase
+        .from("personal_tickets")
+        .insert({
+          flight_id: flight.id,
+          trip_id: flight.trip_id,
+          user_id: user.id,
+          ...ticketForm,
+        });
+    }
+
+    await loadTicket();
+    setSavingTicket(false);
+    setTicketOpen(false);
+  }
+
+  async function handleDeleteTicket() {
+    if (!ticket) return;
+    if (!confirm("¿Eliminar tu pasaje?")) return;
+    await supabase.from("personal_tickets").delete().eq("id", ticket.id);
+    setTicket(null);
+    setTicketForm({ airline: "", flight_number: "", seat: "", pnr: "", notes: "" });
   }
 
   return (
@@ -82,6 +151,46 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
             {flight.notes}
           </p>
         )}
+
+        {/* Pasaje personal */}
+        <div className="mt-3 pt-3 border-t border-stone-100">
+          {ticket ? (
+            <div className="bg-sky-50 rounded-lg px-3 py-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-medium text-sky-700">🎫 Mi pasaje</span>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setTicketOpen(true)}
+                    className="text-xs text-sky-600 hover:text-sky-800"
+                  >
+                    Editar
+                  </button>
+                  <span className="text-stone-300">·</span>
+                  <button
+                    onClick={handleDeleteTicket}
+                    className="text-xs text-red-400 hover:text-red-600"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs text-stone-600">
+                {ticket.airline && <span>Aerolínea: {ticket.airline}</span>}
+                {ticket.flight_number && <span>Vuelo: {ticket.flight_number}</span>}
+                {ticket.seat && <span>Asiento: {ticket.seat}</span>}
+                {ticket.pnr && <span>PNR: {ticket.pnr}</span>}
+                {ticket.notes && <span className="col-span-2">Nota: {ticket.notes}</span>}
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setTicketOpen(true)}
+              className="w-full text-xs text-stone-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg px-3 py-2 border border-dashed border-stone-200 hover:border-sky-200 transition-colors text-left"
+            >
+              + Agregar mi pasaje personal
+            </button>
+          )}
+        </div>
       </div>
 
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Editar vuelo">
@@ -91,6 +200,74 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
           onSuccess={() => { setEditOpen(false); onRefresh(); }}
           onCancel={() => setEditOpen(false)}
         />
+      </Modal>
+
+      <Modal open={ticketOpen} onClose={() => setTicketOpen(false)} title="Mi pasaje personal">
+        <div className="space-y-4">
+          <p className="text-xs text-stone-500">Solo vos podés ver esta información.</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-stone-700 mb-1">Aerolínea</label>
+              <input
+                className="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                value={ticketForm.airline}
+                onChange={(e) => setTicketForm((f) => ({ ...f, airline: e.target.value }))}
+                placeholder="Aerolíneas Arg."
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-stone-700 mb-1">Nro. de vuelo</label>
+              <input
+                className="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                value={ticketForm.flight_number}
+                onChange={(e) => setTicketForm((f) => ({ ...f, flight_number: e.target.value }))}
+                placeholder="AR1234"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-stone-700 mb-1">Asiento</label>
+              <input
+                className="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                value={ticketForm.seat}
+                onChange={(e) => setTicketForm((f) => ({ ...f, seat: e.target.value }))}
+                placeholder="14A"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-stone-700 mb-1">PNR / Código</label>
+              <input
+                className="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                value={ticketForm.pnr}
+                onChange={(e) => setTicketForm((f) => ({ ...f, pnr: e.target.value }))}
+                placeholder="ABC123"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-stone-700 mb-1">Notas</label>
+            <input
+              className="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300"
+              value={ticketForm.notes}
+              onChange={(e) => setTicketForm((f) => ({ ...f, notes: e.target.value }))}
+              placeholder="Equipaje extra, preferencias..."
+            />
+          </div>
+          <div className="flex gap-3 pt-1">
+            <button
+              onClick={() => setTicketOpen(false)}
+              className="btn-secondary flex-1"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSaveTicket}
+              disabled={savingTicket}
+              className="btn-primary flex-1"
+            >
+              {savingTicket ? "Guardando..." : "Guardar"}
+            </button>
+          </div>
+        </div>
       </Modal>
     </>
   );
