@@ -14,7 +14,6 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/auth/login");
 
-  // Fetch trips y memberships en paralelo
   const [{ data: trips }, { data: memberships }] = await Promise.all([
     supabase.from("trips").select("*").order("start_date", { ascending: true }),
     supabase.from("trip_members").select("trip_id").eq("user_id", user.id),
@@ -22,7 +21,6 @@ export default async function DashboardPage() {
 
   const memberTripIds = new Set((memberships ?? []).map((m) => m.trip_id));
 
-  // Filtrar explícitamente por membresía real
   const myTrips = (trips ?? []).filter((t) => t.owner_id === user.id);
   const sharedTrips = (trips ?? []).filter(
     (t) => t.owner_id !== user.id && memberTripIds.has(t.id)
@@ -52,14 +50,14 @@ export default async function DashboardPage() {
   const totalTrips = myTrips.length + sharedTrips.length;
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-cream">
       <Navbar email={user.email} />
 
       <main className="max-w-5xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-7">
           <div>
-            <h1 className="text-2xl font-semibold text-stone-900">Mis viajes</h1>
-            <p className="text-stone-500 text-sm mt-0.5">
+            <h1 className="text-2xl font-semibold text-navy-900">Mis viajes</h1>
+            <p className="text-navy-700 text-sm mt-0.5">
               {totalTrips
                 ? `${totalTrips} ${totalTrips === 1 ? "viaje" : "viajes"}`
                 : "Todavía no tenés viajes"}
@@ -76,7 +74,7 @@ export default async function DashboardPage() {
         {/* Mis viajes */}
         {myTrips.length > 0 ? (
           <div className="mb-10">
-            <h2 className="text-sm font-medium text-stone-500 uppercase tracking-wide mb-3">
+            <h2 className="text-sm font-medium text-navy-300 uppercase tracking-wide mb-3">
               Creados por mí
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -110,7 +108,7 @@ export default async function DashboardPage() {
         {/* Viajes compartidos */}
         {sharedTrips.length > 0 && (
           <div>
-            <h2 className="text-sm font-medium text-stone-500 uppercase tracking-wide mb-3">
+            <h2 className="text-sm font-medium text-navy-300 uppercase tracking-wide mb-3">
               Compartidos conmigo
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

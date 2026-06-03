@@ -99,17 +99,17 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
         {/* Header */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-sky-50 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-sky-accent flex items-center justify-center flex-shrink-0">
               <span className="text-base">✈️</span>
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="font-semibold text-stone-900 text-sm">{flight.airline}</span>
-                <span className="text-xs text-stone-400 font-mono">{flight.flight_number}</span>
+                <span className="font-semibold text-navy-900 text-sm">{flight.airline}</span>
+                <span className="text-xs text-navy-300 font-mono">{flight.flight_number}</span>
               </div>
-              <p className="text-sm text-stone-700 mt-0.5">
+              <p className="text-sm text-navy-700 mt-0.5">
                 {flight.origin}
-                <span className="mx-1.5 text-stone-400">→</span>
+                <span className="mx-1.5 text-navy-300">→</span>
                 {flight.destination}
               </p>
             </div>
@@ -118,7 +118,7 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
           <div className="flex items-center gap-1 flex-shrink-0">
             <button
               onClick={() => setEditOpen(true)}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-stone-400 hover:bg-stone-100 hover:text-stone-600 transition-colors"
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-navy-300 hover:bg-cream-dark hover:text-navy-700 transition-colors"
               title="Editar"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -128,7 +128,7 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-stone-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-navy-300 hover:bg-red-50 hover:text-red-500 transition-colors"
               title="Eliminar"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -139,23 +139,23 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
         </div>
 
         {/* Date */}
-        <div className="mt-2.5 flex items-center gap-1.5 text-xs text-stone-500">
-          <svg className="w-3.5 h-3.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div className="mt-2.5 flex items-center gap-1.5 text-xs text-navy-700">
+          <svg className="w-3.5 h-3.5 text-navy-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           {formatDateTime(flight.departure_at)}
         </div>
 
         {flight.notes && (
-          <p className="mt-2 text-xs text-stone-500 bg-stone-50 rounded-lg px-3 py-2">
+          <p className="mt-2 text-xs text-navy-700 bg-cream rounded-lg px-3 py-2">
             {flight.notes}
           </p>
         )}
 
         {/* Pasaje personal */}
-        <div className="mt-3 pt-3 border-t border-stone-100">
+        <div className="mt-3 pt-3 border-t border-navy-100">
           {ticket ? (
-            <div className="bg-sky-50 rounded-lg px-3 py-2">
+            <div className="bg-sky-accent rounded-lg px-3 py-2">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-medium text-sky-700">🎫 Mi pasaje</span>
                 <div className="flex gap-1">
@@ -165,7 +165,7 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
                   >
                     Editar
                   </button>
-                  <span className="text-stone-300">·</span>
+                  <span className="text-navy-100">·</span>
                   <button
                     onClick={handleDeleteTicket}
                     className="text-xs text-red-400 hover:text-red-600"
@@ -174,7 +174,7 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
                   </button>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs text-stone-600">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs text-navy-700">
                 {ticket.airline && <span>Aerolínea: {ticket.airline}</span>}
                 {ticket.flight_number && <span>Vuelo: {ticket.flight_number}</span>}
                 {ticket.seat && <span>Asiento: {ticket.seat}</span>}
@@ -185,7 +185,7 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
           ) : (
             <button
               onClick={() => setTicketOpen(true)}
-              className="w-full text-xs text-stone-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg px-3 py-2 border border-dashed border-stone-200 hover:border-sky-200 transition-colors text-left"
+              className="w-full text-xs text-navy-300 hover:text-sky-600 hover:bg-sky-accent rounded-lg px-3 py-2 border border-dashed border-navy-100 hover:border-sky-200 transition-colors text-left"
             >
               + Agregar mi pasaje personal
             </button>
@@ -204,39 +204,39 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
 
       <Modal open={ticketOpen} onClose={() => setTicketOpen(false)} title="Mi pasaje personal">
         <div className="space-y-4">
-          <p className="text-xs text-stone-500">Solo vos podés ver esta información.</p>
+          <p className="text-xs text-navy-300">Solo vos podés ver esta información.</p>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-stone-700 mb-1">Aerolínea</label>
+              <label className="block text-xs font-medium text-navy-700 mb-1">Aerolínea</label>
               <input
-                className="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-full text-sm border border-navy-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber/20 focus:border-amber"
                 value={ticketForm.airline}
                 onChange={(e) => setTicketForm((f) => ({ ...f, airline: e.target.value }))}
                 placeholder="Aerolíneas Arg."
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-stone-700 mb-1">Nro. de vuelo</label>
+              <label className="block text-xs font-medium text-navy-700 mb-1">Nro. de vuelo</label>
               <input
-                className="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-full text-sm border border-navy-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber/20 focus:border-amber"
                 value={ticketForm.flight_number}
                 onChange={(e) => setTicketForm((f) => ({ ...f, flight_number: e.target.value }))}
                 placeholder="AR1234"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-stone-700 mb-1">Asiento</label>
+              <label className="block text-xs font-medium text-navy-700 mb-1">Asiento</label>
               <input
-                className="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-full text-sm border border-navy-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber/20 focus:border-amber"
                 value={ticketForm.seat}
                 onChange={(e) => setTicketForm((f) => ({ ...f, seat: e.target.value }))}
                 placeholder="14A"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-stone-700 mb-1">PNR / Código</label>
+              <label className="block text-xs font-medium text-navy-700 mb-1">PNR / Código</label>
               <input
-                className="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-full text-sm border border-navy-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber/20 focus:border-amber"
                 value={ticketForm.pnr}
                 onChange={(e) => setTicketForm((f) => ({ ...f, pnr: e.target.value }))}
                 placeholder="ABC123"
@@ -244,9 +244,9 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-stone-700 mb-1">Notas</label>
+            <label className="block text-xs font-medium text-navy-700 mb-1">Notas</label>
             <input
-              className="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300"
+              className="w-full text-sm border border-navy-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber/20 focus:border-amber"
               value={ticketForm.notes}
               onChange={(e) => setTicketForm((f) => ({ ...f, notes: e.target.value }))}
               placeholder="Equipaje extra, preferencias..."

@@ -68,7 +68,6 @@ export default function FlightForm({
 
       const d = json.data;
 
-      // Pre-fill form with extracted data — only override empty fields
       setForm((prev) => ({
         airline:       d.airline       ?? prev.airline,
         flight_number: d.flight_number ?? prev.flight_number,
@@ -117,7 +116,7 @@ export default function FlightForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
 
-      {/* ── Upload section ── */}
+      {/* Upload section */}
       {!existing && (
         <div>
           <input
@@ -134,8 +133,8 @@ export default function FlightForm({
             disabled={extracting}
             className={`w-full flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl border-2 border-dashed text-sm font-medium transition-all
               ${extracting
-                ? "border-brand-200 bg-brand-50 text-brand-500 cursor-wait"
-                : "border-stone-200 text-stone-500 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600 cursor-pointer"
+                ? "border-amber/30 bg-amber-light text-amber-hover cursor-wait"
+                : "border-navy-100 text-navy-300 hover:border-amber/40 hover:bg-amber-light hover:text-amber-hover cursor-pointer"
               }`}
           >
             {extracting ? (
@@ -157,26 +156,26 @@ export default function FlightForm({
           </button>
 
           {fileName && !extracting && !extractError && (
-            <p className="mt-1.5 text-xs text-brand-600 text-center">
+            <p className="mt-1.5 text-xs text-amber-hover text-center">
               ✓ Datos extraídos — revisá y corregí si es necesario
             </p>
           )}
 
           {extractError && (
-            <div className="mt-2 bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-amber-700">
+            <div className="mt-2 bg-amber-light border border-amber/30 rounded-xl p-3 text-xs text-amber-hover">
               {extractError} — podés completar los datos manualmente.
             </div>
           )}
 
           <div className="flex items-center gap-3 my-4">
-            <div className="flex-1 h-px bg-stone-100" />
-            <span className="text-xs text-stone-400">o completá manualmente</span>
-            <div className="flex-1 h-px bg-stone-100" />
+            <div className="flex-1 h-px bg-navy-100" />
+            <span className="text-xs text-navy-300">o completá manualmente</span>
+            <div className="flex-1 h-px bg-navy-100" />
           </div>
         </div>
       )}
 
-      {/* ── Form fields ── */}
+      {/* Form fields */}
       <div className="grid grid-cols-2 gap-3">
         <Input
           label="Aerolínea"

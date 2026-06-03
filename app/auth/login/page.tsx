@@ -74,7 +74,7 @@ function LoginForm() {
 
   return (
     <div className="card w-full max-w-sm p-8">
-      <div className="flex rounded-xl bg-stone-100 p-1 mb-7">
+      <div className="flex rounded-xl bg-cream-dark p-1 mb-7">
         {(["login", "signup"] as const).map((m) => (
           <button
             key={m}
@@ -85,8 +85,8 @@ function LoginForm() {
             }}
             className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
               mode === m
-                ? "bg-white text-stone-900 shadow-sm"
-                : "text-stone-500 hover:text-stone-700"
+                ? "bg-white text-navy-900 shadow-sm"
+                : "text-navy-300 hover:text-navy-700"
             }`}
           >
             {m === "login" ? "Iniciar sesión" : "Registrarse"}
@@ -95,7 +95,7 @@ function LoginForm() {
       </div>
 
       {successMsg ? (
-        <div className="bg-brand-50 border border-brand-100 rounded-xl p-4 text-sm text-brand-700">
+        <div className="bg-amber-light border border-amber/30 rounded-xl p-4 text-sm text-navy-700">
           {successMsg}
         </div>
       ) : (
@@ -170,10 +170,10 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-cream flex flex-col items-center justify-center px-4 py-12">
       <Link
         href="/"
-        className="font-display text-3xl text-brand-700 mb-10 tracking-tight hover:text-brand-800 transition-colors"
+        className="font-display text-3xl text-amber mb-10 tracking-tight hover:text-amber-hover transition-colors"
       >
         Yendo
       </Link>
@@ -182,7 +182,7 @@ export default function LoginPage() {
         <LoginForm />
       </Suspense>
 
-      <p className="mt-6 text-xs text-stone-400">
+      <p className="mt-6 text-xs text-navy-300">
         Al registrarte aceptás los términos de uso.
       </p>
     </div>

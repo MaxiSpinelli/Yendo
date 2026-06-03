@@ -57,7 +57,7 @@ export default function ProfileForm({ profile }: Props) {
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Avatar */}
       <div className="flex justify-center mb-2">
-        <div className="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center text-2xl font-semibold text-brand-700">
+        <div className="w-16 h-16 rounded-full bg-amber-light flex items-center justify-center text-2xl font-semibold text-amber-hover">
           {initials}
         </div>
       </div>

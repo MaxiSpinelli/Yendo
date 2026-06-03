@@ -13,18 +13,27 @@ const config: Config = {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
       },
       colors: {
-        brand: {
-          50:  "#f0f9f4",
-          100: "#dcf1e5",
-          200: "#bbe3ce",
-          300: "#8dcfae",
-          400: "#59b387",
-          500: "#369869",
-          600: "#267a52",
-          700: "#206243",
-          800: "#1c4e37",
-          900: "#18402e",
-          950: "#0c2419",
+        navy: {
+          900: "#0D1B2A",
+          700: "#1B3A5C",
+          500: "#2A5580",
+          300: "#4A7FA8",
+          100: "#C7DCF0",
+        },
+        amber: {
+          DEFAULT: "#F5A623",
+          hover:   "#E09415",
+          light:   "#FEF3DC",
+        },
+        cream: {
+          DEFAULT: "#FDF6EC",
+          dark:    "#F5EADA",
+        },
+        sky: {
+          accent: "#E8F4F8",
+        },
+        sage: {
+          accent: "#F0F7EE",
         },
       },
       animation: {

@@ -85,20 +85,20 @@ export default function EditTripPage() {
 
   if (fetching) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-brand-300 border-t-brand-600 rounded-full animate-spin" />
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-amber/40 border-t-amber rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-cream">
       <Navbar />
 
       <main className="max-w-lg mx-auto px-4 py-10">
         <Link
           href={`/trips/${params.tripId}`}
-          className="inline-flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-700 mb-6 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-navy-300 hover:text-navy-700 mb-6 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -107,7 +107,7 @@ export default function EditTripPage() {
         </Link>
 
         <div className="card p-7">
-          <h1 className="text-xl font-semibold text-stone-900 mb-7">Editar viaje</h1>
+          <h1 className="text-xl font-semibold text-navy-900 mb-7">Editar viaje</h1>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <Input
@@ -163,8 +163,8 @@ export default function EditTripPage() {
             </div>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-stone-100">
-            <p className="text-xs text-stone-400 mb-3">Zona peligrosa</p>
+          <div className="mt-8 pt-6 border-t border-navy-100">
+            <p className="text-xs text-navy-300 mb-3">Zona peligrosa</p>
             <Button
               type="button"
               variant="danger"

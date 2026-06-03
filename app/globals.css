@@ -20,7 +20,7 @@
   }
 
   body {
-    @apply bg-stone-50 text-stone-900 font-sans;
+    @apply bg-cream text-navy-900 font-sans;
   }
 
   input[type="date"],
@@ -32,15 +32,15 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 text-white font-medium text-sm transition-all hover:bg-brand-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber text-navy-900 font-medium text-sm transition-all hover:bg-amber-hover active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-stone-700 font-medium text-sm border border-stone-200 transition-all hover:bg-stone-50 active:scale-95 disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-navy-700 font-medium text-sm border border-navy-100 transition-all hover:bg-cream active:scale-95 disabled:opacity-50;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-stone-600 font-medium text-sm transition-all hover:bg-stone-100 active:scale-95;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-navy-700 font-medium text-sm transition-all hover:bg-cream-dark active:scale-95;
   }
 
   .btn-danger {
@@ -48,14 +48,14 @@
   }
 
   .input {
-    @apply w-full px-3.5 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-900 text-sm placeholder:text-stone-400 outline-none transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
+    @apply w-full px-3.5 py-2.5 rounded-xl border border-navy-100 bg-white text-navy-900 text-sm placeholder:text-navy-300 outline-none transition-all focus:border-amber focus:ring-2 focus:ring-amber/20;
   }
 
   .label {
-    @apply block text-sm font-medium text-stone-700 mb-1.5;
+    @apply block text-sm font-medium text-navy-700 mb-1.5;
   }
 
   .card {
-    @apply bg-white rounded-2xl border border-stone-200 shadow-sm;
+    @apply bg-white rounded-2xl border border-navy-100 shadow-sm;
   }
 }
