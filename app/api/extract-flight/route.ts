@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 const GEMINI_API_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent";
@@ -21,6 +22,12 @@ Si no podés determinar el año, asumí el año más próximo futuro.
 Devolvé SOLO el JSON, nada más.`;
 
 export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
@@ -40,7 +47,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
     const validTypes = [
       "application/pdf",
       "image/jpeg",
@@ -55,11 +61,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert file to base64
     const arrayBuffer = await file.arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString("base64");
 
-    // Call Gemini API
     const geminiResponse = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -99,7 +103,6 @@ export async function POST(request: NextRequest) {
     const rawText =
       geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
-    // Clean and parse JSON
     const cleaned = rawText
       .replace(/```json/g, "")
       .replace(/```/g, "")
