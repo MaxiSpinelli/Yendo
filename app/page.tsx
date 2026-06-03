@@ -13,12 +13,6 @@ export default function LandingPage() {
 
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center max-w-3xl mx-auto w-full">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-brand-50 text-brand-700 text-xs font-medium px-3.5 py-1.5 rounded-full border border-brand-100 mb-8">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-          MVP · Versión 0.1
-        </div>
-
         <h1 className="font-display text-5xl sm:text-6xl text-stone-900 leading-tight mb-5">
           Todo tu viaje
           <br />
@@ -30,9 +24,14 @@ export default function LandingPage() {
           Compartilo con quienes viajan con vos.
         </p>
 
-        <Link href="/auth/login" className="btn-primary text-base px-8 py-3.5 rounded-2xl shadow-lg shadow-brand-200">
-          Crear mi primer viaje →
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <Link href="/auth/login" className="btn-primary text-base px-8 py-3.5 rounded-2xl shadow-lg shadow-brand-200">
+            Crear mi primer viaje →
+          </Link>
+          <Link href="/demo" className="btn-secondary text-base px-8 py-3.5 rounded-2xl">
+            Ver demo
+          </Link>
+        </div>
 
         {/* Feature pills */}
         <div className="flex flex-wrap justify-center gap-2.5 mt-14">

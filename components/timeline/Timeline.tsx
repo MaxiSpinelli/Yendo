@@ -66,30 +66,52 @@ export default function Timeline({
 
   return (
     <>
-      {/* Add buttons */}
-      <div className="flex gap-2 flex-wrap mb-6">
-        <button onClick={() => setAddModal("flight")} className="btn-secondary text-sm gap-2">
-          <span>✈️</span> Vuelo
-        </button>
-        <button onClick={() => setAddModal("accommodation")} className="btn-secondary text-sm gap-2">
-          <span>🏨</span> Alojamiento
-        </button>
-        <button onClick={() => setAddModal("activity")} className="btn-secondary text-sm gap-2">
-          <span>📍</span> Actividad
-        </button>
-      </div>
+      {/* Add buttons — solo cuando ya hay items */}
+{totalItems > 0 && (
+  <div className="flex gap-2 flex-wrap mb-6">
+    <button onClick={() => setAddModal("flight")} className="btn-secondary text-sm gap-2">
+      <span>✈️</span> Vuelo
+    </button>
+    <button onClick={() => setAddModal("accommodation")} className="btn-secondary text-sm gap-2">
+      <span>🏨</span> Alojamiento
+    </button>
+    <button onClick={() => setAddModal("activity")} className="btn-secondary text-sm gap-2">
+      <span>📍</span> Actividad
+    </button>
+  </div>
+)}
 
       {/* Timeline */}
       {totalItems === 0 ? (
-        <EmptyState
-          icon={
-            <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5" />
-            </svg>
-          }
-          title="El timeline está vacío"
-          description="Agregá vuelos, alojamientos o actividades para empezar a organizar tu viaje."
-        />
+  <div className="text-center py-12">
+    <div className="w-14 h-14 rounded-full bg-brand-50 flex items-center justify-center mx-auto mb-4">
+      <svg className="w-7 h-7 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5" />
+      </svg>
+    </div>
+    <h3 className="text-sm font-medium text-stone-700 mb-1">El viaje está vacío</h3>
+    <p className="text-sm text-stone-400 mb-6">Empezá agregando lo primero que tengas confirmado.</p>
+    <div className="flex gap-2 justify-center flex-wrap">
+      <button
+        onClick={() => setAddModal("flight")}
+        className="btn-secondary text-sm gap-2"
+      >
+        <span>✈️</span> Agregar vuelo
+      </button>
+      <button
+        onClick={() => setAddModal("accommodation")}
+        className="btn-secondary text-sm gap-2"
+      >
+        <span>🏨</span> Agregar alojamiento
+      </button>
+      <button
+        onClick={() => setAddModal("activity")}
+        className="btn-secondary text-sm gap-2"
+      >
+        <span>📍</span> Agregar actividad
+      </button>
+    </div>
+  </div>
       ) : (
         <div className="space-y-6">
           {grouped.map(({ date, items }) => (

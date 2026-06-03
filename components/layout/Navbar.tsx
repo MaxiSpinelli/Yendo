@@ -30,10 +30,19 @@ export default function Navbar({ email }: NavbarProps) {
 
         <div className="flex items-center gap-3">
           {email && (
-            <span className="hidden sm:block text-xs text-stone-400 truncate max-w-[160px]">
+            <Link
+              href="/profile"
+              className="hidden sm:block text-xs text-stone-400 truncate max-w-[160px] hover:text-stone-600 transition-colors"
+            >
               {email}
-            </span>
+            </Link>
           )}
+          <Link
+            href="/profile"
+            className="btn-ghost text-xs px-3 py-1.5"
+          >
+            Mi perfil
+          </Link>
           <button
             onClick={handleSignOut}
             className="btn-ghost text-xs px-3 py-1.5"

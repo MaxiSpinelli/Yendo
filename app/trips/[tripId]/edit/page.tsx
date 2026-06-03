@@ -73,7 +73,7 @@ export default function EditTripPage() {
   async function handleDelete() {
     if (
       !confirm(
-        "¿Eliminar este viaje y todo su contenido? Esta acción no se puede deshacer."
+        "¿Eliminar este viaje? Se eliminará todo el contenido (vuelos, alojamientos, actividades) y todos los miembros perderán el acceso. Esta acción no se puede deshacer."
       )
     )
       return;
