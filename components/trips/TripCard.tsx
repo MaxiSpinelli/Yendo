@@ -5,9 +5,10 @@ import { formatShortDate } from "@/lib/utils/date";
 interface TripCardProps {
   trip: Trip;
   itemCount: number;
+  isOwner: boolean; // ← nuevo
 }
 
-export default function TripCard({ trip, itemCount }: TripCardProps) {
+export default function TripCard({ trip, itemCount, isOwner }: TripCardProps) {
   const isPast = new Date(trip.end_date) < new Date();
   const isUpcoming = new Date(trip.start_date) > new Date();
 
@@ -22,17 +23,24 @@ export default function TripCard({ trip, itemCount }: TripCardProps) {
             </h3>
             <p className="text-sm text-stone-500 mt-0.5 truncate">{trip.destination}</p>
           </div>
-          <span
-            className={`ml-3 flex-shrink-0 text-xs font-medium px-2.5 py-1 rounded-full ${
-              isPast
-                ? "bg-stone-100 text-stone-500"
-                : isUpcoming
-                ? "bg-brand-50 text-brand-600"
-                : "bg-amber-50 text-amber-600"
-            }`}
-          >
-            {isPast ? "Finalizado" : isUpcoming ? "Próximo" : "En curso"}
-          </span>
+          <div className="ml-3 flex-shrink-0 flex items-center gap-1.5"> {/* ← nuevo wrapper */}
+            {!isOwner && ( // ← badge compartido
+              <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-stone-100 text-stone-500">
+                Compartido
+              </span>
+            )}
+            <span
+              className={`flex-shrink-0 text-xs font-medium px-2.5 py-1 rounded-full ${
+                isPast
+                  ? "bg-stone-100 text-stone-500"
+                  : isUpcoming
+                  ? "bg-brand-50 text-brand-600"
+                  : "bg-amber-50 text-amber-600"
+              }`}
+            >
+              {isPast ? "Finalizado" : isUpcoming ? "Próximo" : "En curso"}
+            </span>
+          </div>
         </div>
 
         {/* Dates */}

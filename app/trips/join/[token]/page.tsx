@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import JoinSuccess from "@/components/trips/JoinSuccess";
 
 interface Props {
   params: Promise<{ token: string }>;
@@ -10,17 +11,14 @@ export default async function JoinTripPage({ params }: Props) {
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect(`/auth/login?next=/trips/join/${token}`);
+  if (!user) redirect(`/auth/login?next=/join/${token}`);
 
   // Buscar el viaje por share_token
   const { data: trip } = await supabase
     .from("trips")
-    .select("id, owner_id")
+    .select("id, owner_id, name")
     .eq("share_token", token)
     .single();
-
-  console.log("token:", token);
-  console.log("trip:", trip);
 
   if (!trip) redirect("/dashboard");
 
@@ -44,5 +42,22 @@ export default async function JoinTripPage({ params }: Props) {
     });
   }
 
-  redirect(`/trips/${trip.id}`);
+  // Buscar el nombre del owner
+  const { data: ownerProfile } = await supabase
+    .from("profiles")
+    .select("nickname, first_name")
+    .eq("id", trip.owner_id)
+    .single();
+
+  const ownerName = ownerProfile?.nickname ?? ownerProfile?.first_name ?? "alguien";
+
+  // Mostrar pantalla de bienvenida en vez de redirigir directo
+  return (
+    <JoinSuccess
+      tripId={trip.id}
+      tripName={trip.name}
+      ownerName={ownerName}
+      isNew={!existing}
+    />
+  );
 }

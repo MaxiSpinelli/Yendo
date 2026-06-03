@@ -14,38 +14,54 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/auth/login");
 
-  // Fetch trips
-  const { data: trips } = await supabase
-    .from("trips")
-    .select("*")
-    .order("start_date", { ascending: true });
+  // Fetch trips y memberships en paralelo
+  const [{ data: trips }, { data: memberships }] = await Promise.all([
+    supabase.from("trips").select("*").order("start_date", { ascending: true }),
+    supabase.from("trip_members").select("trip_id").eq("user_id", user.id),
+  ]);
 
-  // Fetch item counts per trip
-  const tripIds = (trips ?? []).map((t) => t.id);
+  const memberTripIds = new Set((memberships ?? []).map((m) => m.trip_id));
 
-  const [flightCounts, accommodationCounts, activityCounts] =
-    await Promise.all([
-      supabase.from("flights").select("trip_id").in("trip_id", tripIds),
-      supabase.from("accommodations").select("trip_id").in("trip_id", tripIds),
-      supabase.from("activities").select("trip_id").in("trip_id", tripIds),
-    ]);
+  // Filtrar explícitamente por membresía real
+  const myTrips = (trips ?? []).filter((t) => t.owner_id === user.id);
+  const sharedTrips = (trips ?? []).filter(
+    (t) => t.owner_id !== user.id && memberTripIds.has(t.id)
+  );
+
+  const allMyTrips = [...myTrips, ...sharedTrips];
+  const tripIds = allMyTrips.map((t) => t.id);
+
+  const [flightCounts, accommodationCounts, activityCounts] = await Promise.all([
+    supabase.from("flights").select("trip_id").in("trip_id", tripIds),
+    supabase.from("accommodations").select("trip_id").in("trip_id", tripIds),
+    supabase.from("activities").select("trip_id").in("trip_id", tripIds),
+  ]);
 
   function countForTrip(rows: { trip_id: string }[] | null, tripId: string) {
     return (rows ?? []).filter((r) => r.trip_id === tripId).length;
   }
+
+  function itemCount(tripId: string) {
+    return (
+      countForTrip(flightCounts.data, tripId) +
+      countForTrip(accommodationCounts.data, tripId) +
+      countForTrip(activityCounts.data, tripId)
+    );
+  }
+
+  const totalTrips = myTrips.length + sharedTrips.length;
 
   return (
     <div className="min-h-screen bg-stone-50">
       <Navbar email={user.email} />
 
       <main className="max-w-5xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex items-center justify-between mb-7">
           <div>
             <h1 className="text-2xl font-semibold text-stone-900">Mis viajes</h1>
             <p className="text-stone-500 text-sm mt-0.5">
-              {trips?.length
-                ? `${trips.length} ${trips.length === 1 ? "viaje" : "viajes"}`
+              {totalTrips
+                ? `${totalTrips} ${totalTrips === 1 ? "viaje" : "viajes"}`
                 : "Todavía no tenés viajes"}
             </p>
           </div>
@@ -57,20 +73,22 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        {/* Grid */}
-        {trips && trips.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {trips.map((trip) => (
-              <TripCard
-                key={trip.id}
-                trip={trip}
-                itemCount={
-                  countForTrip(flightCounts.data, trip.id) +
-                  countForTrip(accommodationCounts.data, trip.id) +
-                  countForTrip(activityCounts.data, trip.id)
-                }
-              />
-            ))}
+        {/* Mis viajes */}
+        {myTrips.length > 0 ? (
+          <div className="mb-10">
+            <h2 className="text-sm font-medium text-stone-500 uppercase tracking-wide mb-3">
+              Creados por mí
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {myTrips.map((trip) => (
+                <TripCard
+                  key={trip.id}
+                  trip={trip}
+                  itemCount={itemCount(trip.id)}
+                  isOwner={true}
+                />
+              ))}
+            </div>
           </div>
         ) : (
           <EmptyState
@@ -87,6 +105,25 @@ export default async function DashboardPage() {
               </Link>
             }
           />
+        )}
+
+        {/* Viajes compartidos */}
+        {sharedTrips.length > 0 && (
+          <div>
+            <h2 className="text-sm font-medium text-stone-500 uppercase tracking-wide mb-3">
+              Compartidos conmigo
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {sharedTrips.map((trip) => (
+                <TripCard
+                  key={trip.id}
+                  trip={trip}
+                  itemCount={itemCount(trip.id)}
+                  isOwner={false}
+                />
+              ))}
+            </div>
+          </div>
         )}
       </main>
     </div>
