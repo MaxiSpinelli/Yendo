@@ -1,11 +1,12 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import Navbar from "@/components/layout/Navbar";
 import Timeline from "@/components/timeline/Timeline";
-import { formatDate } from "@/lib/utils/date";
+import TripHero from "@/components/trips/TripHero";
+import TripStats from "@/components/trips/TripStats";
+import TripSidebar from "@/components/trips/TripSidebar";
 import ShareButton from "@/components/trips/ShareButton";
-import LeaveButton from "@/components/trips/LeaveButton";
+import { differenceInDays, parseISO } from "date-fns";
 
 interface Props {
   params: Promise<{ tripId: string }>;
@@ -15,9 +16,7 @@ export default async function TripPage({ params }: Props) {
   const { tripId } = await params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
   const { data: trip } = await supabase
@@ -39,7 +38,6 @@ export default async function TripPage({ params }: Props) {
   const flights = flightsRes.data ?? [];
   const accommodations = accommodationsRes.data ?? [];
   const activities = activitiesRes.data ?? [];
-  const totalItems = flights.length + accommodations.length + activities.length;
 
   const memberIds = (membersRes.data ?? []).map((m) => m.user_id);
   let memberProfiles: { id: string; nickname: string | null; first_name: string | null }[] = [];
@@ -53,96 +51,87 @@ export default async function TripPage({ params }: Props) {
 
   const ownerProfile = ownerProfileRes.data;
   const isOwner = trip.owner_id === user.id;
-
-  // Un editor es el owner o un miembro con role "editor"
   const myMembership = (membersRes.data ?? []).find((m) => m.user_id === user.id);
   const canEdit = isOwner || myMembership?.role === "editor";
 
   const allParticipants = [
-    { id: trip.owner_id, nickname: ownerProfile?.nickname, first_name: ownerProfile?.first_name, isOwner: true },
-    ...memberProfiles.map((p) => ({ ...p, isOwner: false })),
+  {
+    id: trip.owner_id,
+    nickname: ownerProfile?.nickname ?? null,
+    first_name: ownerProfile?.first_name ?? null,
+    isOwner: true,
+  },
+  ...memberProfiles.map((p) => ({
+    ...p,
+    nickname: p.nickname ?? null,
+    first_name: p.first_name ?? null,
+    isOwner: false,
+  })),
+];
+
+  const tripDays = differenceInDays(parseISO(trip.end_date), parseISO(trip.start_date)) + 1;
+
+  // Extraer ciudades únicas de vuelos para el mapa
+  const cities = [
+    ...new Set([
+      ...flights.map((f) => f.origin),
+      ...flights.map((f) => f.destination),
+    ]),
   ];
 
   return (
-    <div className="min-h-screen bg-cream">
-      <Navbar email={user.email} />
+    <div className="min-h-screen bg-white">
 
-      <main className="max-w-2xl mx-auto px-4 py-8">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-navy-300 hover:text-navy-700 mb-5 transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Mis viajes
-        </Link>
+      {/* Hero — 65vh */}
+      <TripHero
+        trip={trip}
+        participants={allParticipants}
+        tripDays={tripDays}
+        totalActivities={activities.length}
+        isOwner={isOwner}
+        canEdit={canEdit}
+      />
 
-        <div className="mb-7">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h1 className="text-2xl font-semibold text-navy-900">{trip.name}</h1>
-              <p className="text-navy-700 mt-0.5">{trip.destination}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <ShareButton shareToken={trip.share_token} />
-              {isOwner ? (
-                <Link
-                  href={`/trips/${trip.id}/edit`}
-                  className="btn-ghost text-sm flex-shrink-0"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                  Editar
-                </Link>
-              ) : (
-                <LeaveButton tripId={tripId} />
-              )}
-            </div>
+      {/* Stat bar */}
+      <TripStats
+        flights={flights.length}
+        accommodations={accommodations.length}
+        activities={activities.length}
+        days={tripDays}
+        cities={cities.length}
+        participants={allParticipants.length}
+      />
+
+      {/* Main content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex gap-10 items-start">
+
+          {/* Timeline — columna principal */}
+          <div className="flex-1 min-w-0">
+            <Timeline
+              tripId={tripId}
+              initialFlights={flights}
+              initialAccommodations={accommodations}
+              initialActivities={activities}
+              canEdit={canEdit}
+              cities={cities}
+            />
           </div>
 
-          <div className="flex items-center gap-4 mt-3 text-sm text-navy-700 flex-wrap">
-            <div className="flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-navy-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              {formatDate(trip.start_date)} → {formatDate(trip.end_date)}
-            </div>
-            <span className="text-navy-100">·</span>
-            <span>{totalItems} {totalItems === 1 ? "elemento" : "elementos"}</span>
-          </div>
+          {/* Sidebar — solo desktop */}
+          <aside className="hidden lg:block w-72 flex-shrink-0 sticky top-6">
+            <TripSidebar
+              trip={trip}
+              participants={allParticipants}
+              flights={flights}
+              accommodations={accommodations}
+              activities={activities}
+              cities={cities}
+            />
+          </aside>
 
-          {allParticipants.length > 0 && (
-            <div className="flex items-center gap-2 mt-3 flex-wrap">
-              {allParticipants.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center gap-1.5 bg-white border border-navy-100 rounded-full px-3 py-1"
-                >
-                  <div className="w-5 h-5 rounded-full bg-amber-light flex items-center justify-center text-xs font-semibold text-amber-hover">
-                    {(p.nickname ?? p.first_name ?? "?")[0].toUpperCase()}
-                  </div>
-                  <span className="text-xs text-navy-700">
-                    {p.nickname ?? p.first_name ?? "Sin nombre"}
-                  </span>
-                  {p.isOwner && (
-                    <span className="text-xs text-navy-300">👑</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
-
-        <Timeline
-          tripId={tripId}
-          initialFlights={flights}
-          initialAccommodations={accommodations}
-          initialActivities={activities}
-          canEdit={canEdit}
-        />
-      </main>
+      </div>
     </div>
   );
 }
