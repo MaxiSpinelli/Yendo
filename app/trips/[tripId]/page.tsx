@@ -32,7 +32,7 @@ export default async function TripPage({ params }: Props) {
     supabase.from("flights").select("*").eq("trip_id", tripId).order("departure_at"),
     supabase.from("accommodations").select("*").eq("trip_id", tripId).order("checkin_at"),
     supabase.from("activities").select("*").eq("trip_id", tripId).order("starts_at"),
-    supabase.from("trip_members").select("user_id").eq("trip_id", tripId),
+    supabase.from("trip_members").select("user_id, role").eq("trip_id", tripId),
     supabase.from("profiles").select("nickname, first_name").eq("id", trip.owner_id).single(),
   ]);
 
@@ -53,6 +53,10 @@ export default async function TripPage({ params }: Props) {
 
   const ownerProfile = ownerProfileRes.data;
   const isOwner = trip.owner_id === user.id;
+
+  // Un editor es el owner o un miembro con role "editor"
+  const myMembership = (membersRes.data ?? []).find((m) => m.user_id === user.id);
+  const canEdit = isOwner || myMembership?.role === "editor";
 
   const allParticipants = [
     { id: trip.owner_id, nickname: ownerProfile?.nickname, first_name: ownerProfile?.first_name, isOwner: true },
@@ -136,6 +140,7 @@ export default async function TripPage({ params }: Props) {
           initialFlights={flights}
           initialAccommodations={accommodations}
           initialActivities={activities}
+          canEdit={canEdit}
         />
       </main>
     </div>

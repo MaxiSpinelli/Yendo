@@ -5,26 +5,37 @@ import { createClient } from "@/lib/supabase/client";
 import type { Accommodation } from "@/lib/types/database";
 import { formatDateTime } from "@/lib/utils/date";
 import Modal from "@/components/ui/Modal";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import AccommodationForm from "@/components/forms/AccommodationForm";
+import { toast } from "@/components/ui/Toast";
 
 interface AccommodationCardProps {
   accommodation: Accommodation;
   onRefresh: () => void;
+  canEdit?: boolean;
 }
 
 export default function AccommodationCard({
   accommodation,
   onRefresh,
+  canEdit = true,
 }: AccommodationCardProps) {
   const supabase = createClient();
   const [editOpen, setEditOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
-    if (!confirm("¿Eliminar este alojamiento?")) return;
     setDeleting(true);
-    await supabase.from("accommodations").delete().eq("id", accommodation.id);
-    onRefresh();
+    const { error } = await supabase.from("accommodations").delete().eq("id", accommodation.id);
+    setDeleting(false);
+    setConfirmOpen(false);
+    if (error) {
+      toast("No se pudo eliminar el alojamiento", "error");
+    } else {
+      toast("Alojamiento eliminado");
+      onRefresh();
+    }
   }
 
   return (
@@ -41,25 +52,26 @@ export default function AccommodationCard({
             </div>
           </div>
 
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <button
-              onClick={() => setEditOpen(true)}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-navy-300 hover:bg-cream-dark hover:text-navy-700 transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
-            </button>
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-navy-300 hover:bg-red-50 hover:text-red-500 transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
+          {canEdit && (
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button
+                onClick={() => setEditOpen(true)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-navy-300 hover:bg-cream-dark hover:text-navy-700 transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setConfirmOpen(true)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-navy-300 hover:bg-red-50 hover:text-red-500 transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="mt-2.5 grid grid-cols-2 gap-2 text-xs text-navy-700">
@@ -88,10 +100,20 @@ export default function AccommodationCard({
         <AccommodationForm
           tripId={accommodation.trip_id}
           existing={accommodation}
-          onSuccess={() => { setEditOpen(false); onRefresh(); }}
+          onSuccess={() => { setEditOpen(false); onRefresh(); toast("Alojamiento actualizado"); }}
           onCancel={() => setEditOpen(false)}
         />
       </Modal>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="¿Eliminar alojamiento?"
+        description={`Se eliminará "${accommodation.name}". Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar alojamiento"
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmOpen(false)}
+        loading={deleting}
+      />
     </>
   );
 }

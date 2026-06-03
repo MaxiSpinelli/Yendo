@@ -5,16 +5,20 @@ import { createClient } from "@/lib/supabase/client";
 import type { Flight, PersonalTicket } from "@/lib/types/database";
 import { formatDateTime } from "@/lib/utils/date";
 import Modal from "@/components/ui/Modal";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import FlightForm from "@/components/forms/FlightForm";
+import { toast } from "@/components/ui/Toast";
 
 interface FlightCardProps {
   flight: Flight;
   onRefresh: () => void;
+  canEdit?: boolean;
 }
 
-export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
+export default function FlightCard({ flight, onRefresh, canEdit = true }: FlightCardProps) {
   const supabase = createClient();
   const [editOpen, setEditOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [ticket, setTicket] = useState<PersonalTicket | null>(null);
   const [ticketOpen, setTicketOpen] = useState(false);
@@ -26,6 +30,7 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
     notes: "",
   });
   const [savingTicket, setSavingTicket] = useState(false);
+  const [confirmTicketDelete, setConfirmTicketDelete] = useState(false);
 
   useEffect(() => {
     loadTicket();
@@ -53,10 +58,16 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
   }
 
   async function handleDelete() {
-    if (!confirm("¿Eliminar este vuelo?")) return;
     setDeleting(true);
-    await supabase.from("flights").delete().eq("id", flight.id);
-    onRefresh();
+    const { error } = await supabase.from("flights").delete().eq("id", flight.id);
+    setDeleting(false);
+    setConfirmOpen(false);
+    if (error) {
+      toast("No se pudo eliminar el vuelo", "error");
+    } else {
+      toast("Vuelo eliminado");
+      onRefresh();
+    }
   }
 
   async function handleSaveTicket() {
@@ -64,33 +75,40 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    let error;
     if (ticket) {
-      await supabase
+      ({ error } = await supabase
         .from("personal_tickets")
         .update(ticketForm)
-        .eq("id", ticket.id);
+        .eq("id", ticket.id));
     } else {
-      await supabase
+      ({ error } = await supabase
         .from("personal_tickets")
         .insert({
           flight_id: flight.id,
           trip_id: flight.trip_id,
           user_id: user.id,
           ...ticketForm,
-        });
+        }));
     }
 
-    await loadTicket();
     setSavingTicket(false);
-    setTicketOpen(false);
+    if (error) {
+      toast("No se pudo guardar el pasaje", "error");
+    } else {
+      toast("Pasaje guardado");
+      await loadTicket();
+      setTicketOpen(false);
+    }
   }
 
   async function handleDeleteTicket() {
     if (!ticket) return;
-    if (!confirm("¿Eliminar tu pasaje?")) return;
     await supabase.from("personal_tickets").delete().eq("id", ticket.id);
     setTicket(null);
     setTicketForm({ airline: "", flight_number: "", seat: "", pnr: "", notes: "" });
+    setConfirmTicketDelete(false);
+    toast("Pasaje eliminado");
   }
 
   return (
@@ -115,27 +133,28 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <button
-              onClick={() => setEditOpen(true)}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-navy-300 hover:bg-cream-dark hover:text-navy-700 transition-colors"
-              title="Editar"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
-            </button>
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-navy-300 hover:bg-red-50 hover:text-red-500 transition-colors"
-              title="Eliminar"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
+          {canEdit && (
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button
+                onClick={() => setEditOpen(true)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-navy-300 hover:bg-cream-dark hover:text-navy-700 transition-colors"
+                title="Editar"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setConfirmOpen(true)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-navy-300 hover:bg-red-50 hover:text-red-500 transition-colors"
+                title="Eliminar"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Date */}
@@ -152,7 +171,7 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
           </p>
         )}
 
-        {/* Pasaje personal */}
+        {/* Pasaje personal — siempre visible para todos */}
         <div className="mt-3 pt-3 border-t border-navy-100">
           {ticket ? (
             <div className="bg-sky-accent rounded-lg px-3 py-2">
@@ -167,7 +186,7 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
                   </button>
                   <span className="text-navy-100">·</span>
                   <button
-                    onClick={handleDeleteTicket}
+                    onClick={() => setConfirmTicketDelete(true)}
                     className="text-xs text-red-400 hover:text-red-600"
                   >
                     Eliminar
@@ -193,15 +212,28 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
         </div>
       </div>
 
+      {/* Edit modal */}
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Editar vuelo">
         <FlightForm
           tripId={flight.trip_id}
           existing={flight}
-          onSuccess={() => { setEditOpen(false); onRefresh(); }}
+          onSuccess={() => { setEditOpen(false); onRefresh(); toast("Vuelo actualizado"); }}
           onCancel={() => setEditOpen(false)}
         />
       </Modal>
 
+      {/* Delete confirm */}
+      <ConfirmDialog
+        open={confirmOpen}
+        title="¿Eliminar vuelo?"
+        description={`Se eliminará el vuelo ${flight.airline} ${flight.flight_number} (${flight.origin} → ${flight.destination}). Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar vuelo"
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmOpen(false)}
+        loading={deleting}
+      />
+
+      {/* Ticket modal */}
       <Modal open={ticketOpen} onClose={() => setTicketOpen(false)} title="Mi pasaje personal">
         <div className="space-y-4">
           <p className="text-xs text-navy-300">Solo vos podés ver esta información.</p>
@@ -253,22 +285,25 @@ export default function FlightCard({ flight, onRefresh }: FlightCardProps) {
             />
           </div>
           <div className="flex gap-3 pt-1">
-            <button
-              onClick={() => setTicketOpen(false)}
-              className="btn-secondary flex-1"
-            >
+            <button onClick={() => setTicketOpen(false)} className="btn-secondary flex-1">
               Cancelar
             </button>
-            <button
-              onClick={handleSaveTicket}
-              disabled={savingTicket}
-              className="btn-primary flex-1"
-            >
+            <button onClick={handleSaveTicket} disabled={savingTicket} className="btn-primary flex-1">
               {savingTicket ? "Guardando..." : "Guardar"}
             </button>
           </div>
         </div>
       </Modal>
+
+      {/* Delete ticket confirm */}
+      <ConfirmDialog
+        open={confirmTicketDelete}
+        title="¿Eliminar tu pasaje?"
+        description="Se eliminará tu información personal de este vuelo."
+        confirmLabel="Eliminar pasaje"
+        onConfirm={handleDeleteTicket}
+        onCancel={() => setConfirmTicketDelete(false)}
+      />
     </>
   );
 }
