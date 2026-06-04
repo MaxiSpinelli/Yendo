@@ -32,9 +32,9 @@ const features = [
 ];
 
 const heroImages = [
+   "/landing/toronto.jpg",
   "/landing/paris.jpg",
   "/landing/rome.jpg",
-  "/landing/toronto.jpg",
 ];
 
 export default function LandingPage() {
@@ -57,15 +57,15 @@ export default function LandingPage() {
       {/* Hero */}
       <div style={{ margin: "0 24px", borderRadius: "20px", overflow: "hidden", height: "480px", position: "relative", display: "flex", alignItems: "flex-end" }}>
         {/* Grilla de imágenes */}
-        <div style={{ position: "absolute", inset: 0, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "3px" }}>
-          {heroImages.map((src, i) => (
-            <div
-              key={i}
-              className={i === 0 ? "" : "hero-side-img"}
-              style={{ backgroundImage: `url('${src}')`, backgroundSize: "cover", backgroundPosition: "center" }}
-            />
-          ))}
-        </div>
+        <div style={{ position: "absolute", inset: 0 }} className="hero-grid">
+  {heroImages.map((src, i) => (
+    <div
+      key={i}
+      style={{ backgroundImage: `url('${src}')`, backgroundSize: "cover", backgroundPosition: "center" }}
+      className={i !== 0 ? "hidden sm:block" : ""}
+    />
+  ))}
+</div>
 
         {/* Overlay */}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)" }} />
@@ -116,7 +116,7 @@ export default function LandingPage() {
       </div>
 
       {/* Features */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", padding: "20px 40px 0" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 px-5 sm:px-10 pt-5">
         {features.map((f) => (
           <div key={f.title} style={{ background: "#f7f7f8", borderRadius: "16px", padding: "20px" }}>
             <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: f.bg, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px", fontSize: "18px" }}>
