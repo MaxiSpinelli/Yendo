@@ -75,11 +75,17 @@ export default function FlightForm({ tripId, existing, onSuccess, onCancel }: Fl
   }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setFileName(file.name);
-    setExtractError(null);
-    setExtracting(true);
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  if (file.size > 4 * 1024 * 1024) {
+    setExtractError("El archivo es demasiado grande. Usá un PDF o imagen de menos de 4MB.");
+    return;
+  }
+
+  setFileName(file.name);
+  setExtractError(null);
+  setExtracting(true);
     try {
       const formData = new FormData();
       formData.append("file", file);
