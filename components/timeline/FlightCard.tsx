@@ -28,7 +28,6 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
   });
   const [savingTicket, setSavingTicket] = useState(false);
   const [confirmTicketDelete, setConfirmTicketDelete] = useState(false);
-  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => { loadTicket(); }, [flight.id]);
 
@@ -89,7 +88,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
     <>
       <div
         className="rounded-2xl overflow-hidden transition-all"
-        style={{ border: "1px solid #dde8ff", background: "#f8faff" }}
+        style={{ border: "1px solid #d8cfc8", background: "#f5f0ea" }}
       >
         {/* Card principal */}
         <div className="p-4">
@@ -97,41 +96,39 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
 
             {/* Ruta visual */}
             <div className="flex-1 min-w-0">
-              {/* Aerolínea + número */}
               <div className="flex items-center gap-2 mb-3">
                 <div
                   className="px-2 py-0.5 rounded-md text-xs font-semibold"
-                  style={{ background: "#0066ff", color: "white" }}
+                  style={{ background: "#2563eb", color: "#faf7f2" }}
                 >
                   ✈️ {flight.flight_number}
                 </div>
-                <span className="text-xs" style={{ color: "#6b96ff" }}>
+                <span className="text-xs" style={{ color: "#6b5f54" }}>
                   {flight.airline}
                 </span>
               </div>
 
-              {/* Origen → Destino — estilo boarding pass */}
               <div className="flex items-center gap-3">
                 <div className="text-center">
-                  <p className="font-bold text-xl tabular-nums" style={{ color: "#0a0a0b", lineHeight: 1 }}>
+                  <p className="font-bold text-xl tabular-nums" style={{ color: "#1a1714", lineHeight: 1 }}>
                     {flight.origin}
                   </p>
-                  <p className="text-xs mt-0.5" style={{ color: "#6b6b7b" }}>{depTime}</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#6b5f54" }}>{depTime}</p>
                 </div>
 
                 <div className="flex-1 flex items-center gap-1.5">
-                  <div className="flex-1 h-px" style={{ background: "#c0d0ff" }} />
-                  <svg className="w-4 h-4 flex-shrink-0" style={{ color: "#0066ff" }} fill="currentColor" viewBox="0 0 24 24">
+                  <div className="flex-1 h-px" style={{ background: "#b8c8e8" }} />
+                  <svg className="w-4 h-4 flex-shrink-0" style={{ color: "#2563eb" }} fill="currentColor" viewBox="0 0 24 24">
                     <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
                   </svg>
-                  <div className="flex-1 h-px" style={{ background: "#c0d0ff" }} />
+                  <div className="flex-1 h-px" style={{ background: "#b8c8e8" }} />
                 </div>
 
                 <div className="text-center">
-                  <p className="font-bold text-xl tabular-nums" style={{ color: "#0a0a0b", lineHeight: 1 }}>
+                  <p className="font-bold text-xl tabular-nums" style={{ color: "#1a1714", lineHeight: 1 }}>
                     {flight.destination}
                   </p>
-                  <p className="text-xs mt-0.5" style={{ color: "#6b6b7b" }}>{depDate}</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#6b5f54" }}>{depDate}</p>
                 </div>
               </div>
             </div>
@@ -142,7 +139,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
                 <button
                   onClick={() => setEditOpen(true)}
                   className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
-                  style={{ color: "#6b96ff" }}
+                  style={{ color: "#2563eb" }}
                   onMouseEnter={(e) => e.currentTarget.style.background = "#e8f0ff"}
                   onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                 >
@@ -153,9 +150,9 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
                 <button
                   onClick={() => setConfirmOpen(true)}
                   className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
-                  style={{ color: "#6b96ff" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "#fee8e8"; e.currentTarget.style.color = "#e53e3e"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#6b96ff"; }}
+                  style={{ color: "#2563eb" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "#f5ede8"; e.currentTarget.style.color = "#c4622d"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#2563eb"; }}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -166,34 +163,34 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
           </div>
 
           {flight.notes && (
-            <p className="mt-3 text-xs px-3 py-2 rounded-lg" style={{ background: "#eef2ff", color: "#4b6bcc" }}>
+            <p className="mt-3 text-xs px-3 py-2 rounded-lg" style={{ background: "#e8e0d8", color: "#6b5f54" }}>
               {flight.notes}
             </p>
           )}
         </div>
 
-        {/* Separador punteado estilo boarding pass */}
-        <div className="flex items-center px-4" style={{ gap: 0 }}>
-          <div className="w-4 h-4 rounded-full flex-shrink-0 -ml-6" style={{ background: "white", border: "1px solid #dde8ff" }} />
-          <div className="flex-1 border-t border-dashed" style={{ borderColor: "#c0d0ff" }} />
-          <div className="w-4 h-4 rounded-full flex-shrink-0 -mr-6" style={{ background: "white", border: "1px solid #dde8ff" }} />
+        {/* Separador boarding pass */}
+        <div className="flex items-center px-4">
+          <div className="w-4 h-4 rounded-full flex-shrink-0 -ml-6" style={{ background: "#faf7f2", border: "1px solid #d8cfc8" }} />
+          <div className="flex-1 border-t border-dashed" style={{ borderColor: "#b8c8e8" }} />
+          <div className="w-4 h-4 rounded-full flex-shrink-0 -mr-6" style={{ background: "#faf7f2", border: "1px solid #d8cfc8" }} />
         </div>
 
-        {/* Sección pasaje personal */}
+        {/* Pasaje personal */}
         <div className="px-4 py-3">
           {ticket ? (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold" style={{ color: "#0066ff" }}>🎫 Mi pasaje</span>
+                <span className="text-xs font-semibold" style={{ color: "#2563eb" }}>🎫 Mi pasaje</span>
                 <div className="flex gap-2">
-                  <button onClick={() => setTicketOpen(true)} className="text-xs" style={{ color: "#6b96ff" }}>Editar</button>
-                  <span style={{ color: "#c0d0ff" }}>·</span>
-                  <button onClick={() => setConfirmTicketDelete(true)} className="text-xs" style={{ color: "#e53e3e" }}>Eliminar</button>
+                  <button onClick={() => setTicketOpen(true)} className="text-xs" style={{ color: "#6b5f54" }}>Editar</button>
+                  <span style={{ color: "#d8cfc8" }}>·</span>
+                  <button onClick={() => setConfirmTicketDelete(true)} className="text-xs" style={{ color: "#c4622d" }}>Eliminar</button>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs" style={{ color: "#4b6bcc" }}>
-                {ticket.seat && <span>Asiento: <strong>{ticket.seat}</strong></span>}
-                {ticket.pnr && <span>PNR: <strong>{ticket.pnr}</strong></span>}
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs" style={{ color: "#6b5f54" }}>
+                {ticket.seat && <span>Asiento: <strong style={{ color: "#1a1714" }}>{ticket.seat}</strong></span>}
+                {ticket.pnr && <span>PNR: <strong style={{ color: "#1a1714" }}>{ticket.pnr}</strong></span>}
                 {ticket.airline && <span>Aerolínea: {ticket.airline}</span>}
                 {ticket.flight_number && <span>Vuelo: {ticket.flight_number}</span>}
                 {ticket.notes && <span className="col-span-2">{ticket.notes}</span>}
@@ -203,9 +200,9 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
             <button
               onClick={() => setTicketOpen(true)}
               className="w-full text-xs font-medium text-left transition-colors"
-              style={{ color: "#6b96ff" }}
-              onMouseEnter={(e) => e.currentTarget.style.color = "#0066ff"}
-              onMouseLeave={(e) => e.currentTarget.style.color = "#6b96ff"}
+              style={{ color: "#6b5f54" }}
+              onMouseEnter={(e) => e.currentTarget.style.color = "#2563eb"}
+              onMouseLeave={(e) => e.currentTarget.style.color = "#6b5f54"}
             >
               + Agregar mi pasaje personal
             </button>
@@ -226,7 +223,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
 
       <Modal open={ticketOpen} onClose={() => setTicketOpen(false)} title="Mi pasaje personal">
         <div className="space-y-4">
-          <p className="text-xs" style={{ color: "#6b6b7b" }}>Solo vos podés ver esta información.</p>
+          <p className="text-xs" style={{ color: "#6b5f54" }}>Solo vos podés ver esta información.</p>
           <div className="grid grid-cols-2 gap-3">
             {[
               { label: "Aerolínea", key: "airline", placeholder: "Aerolíneas Arg." },
@@ -235,29 +232,29 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
               { label: "PNR / Código", key: "pnr", placeholder: "ABC123" },
             ].map(({ label, key, placeholder }) => (
               <div key={key}>
-                <label className="block text-xs font-medium mb-1" style={{ color: "#6b6b7b" }}>{label}</label>
+                <label className="block text-xs font-medium mb-1" style={{ color: "#6b5f54" }}>{label}</label>
                 <input
                   className="w-full text-sm px-3 py-2 rounded-lg outline-none transition-all"
-                  style={{ border: "1px solid #ebebed", background: "#fafafa" }}
+                  style={{ border: "1px solid #e8e0d8", background: "#faf7f2", color: "#1a1714" }}
                   value={ticketForm[key as keyof typeof ticketForm]}
                   onChange={(e) => setTicketForm((f) => ({ ...f, [key]: e.target.value }))}
                   placeholder={placeholder}
-                  onFocus={(e) => e.currentTarget.style.borderColor = "#0066ff"}
-                  onBlur={(e) => e.currentTarget.style.borderColor = "#ebebed"}
+                  onFocus={(e) => e.currentTarget.style.borderColor = "#2563eb"}
+                  onBlur={(e) => e.currentTarget.style.borderColor = "#e8e0d8"}
                 />
               </div>
             ))}
           </div>
           <div>
-            <label className="block text-xs font-medium mb-1" style={{ color: "#6b6b7b" }}>Notas</label>
+            <label className="block text-xs font-medium mb-1" style={{ color: "#6b5f54" }}>Notas</label>
             <input
               className="w-full text-sm px-3 py-2 rounded-lg outline-none"
-              style={{ border: "1px solid #ebebed", background: "#fafafa" }}
+              style={{ border: "1px solid #e8e0d8", background: "#faf7f2", color: "#1a1714" }}
               value={ticketForm.notes}
               onChange={(e) => setTicketForm((f) => ({ ...f, notes: e.target.value }))}
               placeholder="Equipaje extra, preferencias..."
-              onFocus={(e) => e.currentTarget.style.borderColor = "#0066ff"}
-              onBlur={(e) => e.currentTarget.style.borderColor = "#ebebed"}
+              onFocus={(e) => e.currentTarget.style.borderColor = "#2563eb"}
+              onBlur={(e) => e.currentTarget.style.borderColor = "#e8e0d8"}
             />
           </div>
           <div className="flex gap-3 pt-1">

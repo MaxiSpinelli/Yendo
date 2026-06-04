@@ -22,9 +22,7 @@ interface TripSidebarProps {
   cities: string[];
 }
 
-// Coordenadas aproximadas por nombre de ciudad/aeropuerto
 const CITY_COORDS: Record<string, [number, number]> = {
-  // Aeropuertos IATA comunes
   EZE: [-34.8222, -58.5358], BUE: [-34.6037, -58.3816],
   GRU: [-23.4356, -46.4731], GIG: [-22.8099, -43.2505],
   SCL: [-33.3929, -70.7858], LIM: [-12.0219, -77.1143],
@@ -39,7 +37,6 @@ const CITY_COORDS: Record<string, [number, number]> = {
   DXB: [25.2532, 55.3657],  SIN: [1.3644,  103.9915],
   NRT: [35.7720, 140.3929], HND: [35.5494, 139.7798],
   SYD: [-33.9399, 151.1753],
-  // Ciudades por nombre
   "buenos aires": [-34.6037, -58.3816],
   "paris": [48.8566, 2.3522], "parís": [48.8566, 2.3522],
   "london": [51.5074, -0.1278], "londres": [51.5074, -0.1278],
@@ -63,7 +60,6 @@ const CITY_COORDS: Record<string, [number, number]> = {
 function getCityCoords(name: string): [number, number] | null {
   const key = name.toLowerCase().trim();
   if (CITY_COORDS[key]) return CITY_COORDS[key];
-  // Intentar match parcial
   for (const [k, v] of Object.entries(CITY_COORDS)) {
     if (key.includes(k) || k.includes(key)) return v;
   }
@@ -84,7 +80,6 @@ function getCountdown(startDate: string): { label: string; value: string } {
   return { label: "Faltan", value: `${days} días` };
 }
 
-// Mapa con Leaflet (solo cliente)
 function TripMap({ cities }: { cities: string[] }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
@@ -98,9 +93,7 @@ function TripMap({ cities }: { cities: string[] }) {
 
     if (points.length === 0) return;
 
-    // Importar Leaflet dinámicamente
     import("leaflet").then((L) => {
-      // Fix icono default de Leaflet en Next.js
       delete (L.Icon.Default.prototype as any)._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -117,26 +110,24 @@ function TripMap({ cities }: { cities: string[] }) {
 
       mapInstance.current = map;
 
-      // Tiles estilo minimalista (CartoDB Positron — sin API key)
       L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
         maxZoom: 19,
       }).addTo(map);
 
-      // Marcadores con estilo custom
       const customIcon = L.divIcon({
         className: "",
         html: `<div style="
           width:12px;height:12px;
-          background:#0066ff;
-          border:2px solid white;
+          background:#2d6a4f;
+          border:2px solid #faf7f2;
           border-radius:50%;
-          box-shadow:0 2px 6px rgba(0,102,255,0.4);
+          box-shadow:0 2px 6px rgba(45,106,79,0.4);
         "></div>`,
         iconSize: [12, 12],
         iconAnchor: [6, 6],
       });
 
-      points.forEach((p, i) => {
+      points.forEach((p) => {
         L.marker(p.coords, { icon: customIcon })
           .addTo(map)
           .bindTooltip(p.name, {
@@ -145,34 +136,17 @@ function TripMap({ cities }: { cities: string[] }) {
             offset: [0, -8],
             className: "leaflet-tooltip-custom",
           });
-
-        // Número de orden
-        L.divIcon({
-          className: "",
-          html: `<div style="
-            width:18px;height:18px;
-            background:#0a0a0b;
-            color:white;
-            border-radius:50%;
-            font-size:10px;
-            font-weight:600;
-            display:flex;align-items:center;justify-content:center;
-            font-family:system-ui,sans-serif;
-          ">${i + 1}</div>`,
-        });
       });
 
-      // Línea conectando ciudades en orden
       if (points.length > 1) {
         L.polyline(points.map((p) => p.coords), {
-          color: "#0066ff",
+          color: "#2d6a4f",
           weight: 2,
           opacity: 0.5,
           dashArray: "6 6",
         }).addTo(map);
       }
 
-      // Fit bounds
       const bounds = L.latLngBounds(points.map((p) => p.coords));
       map.fitBounds(bounds, { padding: [24, 24] });
     });
@@ -187,14 +161,11 @@ function TripMap({ cities }: { cities: string[] }) {
 
   return (
     <>
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      />
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
       <style>{`
         .leaflet-tooltip-custom {
-          background: #0a0a0b;
-          color: white;
+          background: #1a1714;
+          color: #faf7f2;
           border: none;
           border-radius: 6px;
           font-size: 11px;
@@ -222,7 +193,6 @@ export default function TripSidebar({
 }: TripSidebarProps) {
   const countdown = getCountdown(trip.start_date);
 
-  // Próximos eventos — unir todo y ordenar por fecha
   const allEvents = [
     ...flights.map((f) => ({
       type: "flight" as const,
@@ -247,17 +217,8 @@ export default function TripSidebar({
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 3);
 
-  const typeIcon = {
-    flight: "✈️",
-    accommodation: "🏨",
-    activity: "📍",
-  };
-
-  const typeColor = {
-    flight: "#0066ff",
-    accommodation: "#00a67e",
-    activity: "#f5620f",
-  };
+  const typeIcon = { flight: "✈️", accommodation: "🏨", activity: "📍" };
+  const typeColor = { flight: "#2563eb", accommodation: "#2d6a4f", activity: "#c4622d" };
 
   return (
     <div className="flex flex-col gap-4">
@@ -265,15 +226,15 @@ export default function TripSidebar({
       {/* Countdown */}
       <div
         className="rounded-2xl p-5 text-center"
-        style={{ background: "#f7f7f8", border: "1px solid #ebebed" }}
+        style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}
       >
-        <p className="text-xs font-medium uppercase tracking-wide mb-1" style={{ color: "#a0a0b0" }}>
+        <p className="text-xs font-medium uppercase tracking-wide mb-1" style={{ color: "#a09088" }}>
           {countdown.label}
         </p>
-        <p className="font-semibold" style={{ fontSize: 36, color: "#0a0a0b", lineHeight: 1 }}>
+        <p className="font-semibold" style={{ fontSize: 36, color: "#1a1714", lineHeight: 1 }}>
           {countdown.value}
         </p>
-        <p className="text-xs mt-2" style={{ color: "#6b6b7b" }}>
+        <p className="text-xs mt-2" style={{ color: "#6b5f54" }}>
           {format(parseISO(trip.start_date), "d 'de' MMMM, yyyy", { locale: es })}
         </p>
       </div>
@@ -282,25 +243,25 @@ export default function TripSidebar({
       {cities.length > 0 && (
         <div
           className="rounded-2xl overflow-hidden"
-          style={{ border: "1px solid #ebebed" }}
+          style={{ border: "1px solid #e8e0d8" }}
         >
-          <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b6b7b" }}>
+          <div className="px-4 pt-4 pb-3 flex items-center justify-between" style={{ background: "#f0ebe3" }}>
+            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b5f54" }}>
               Ruta
             </p>
             <div className="flex items-center gap-1.5">
               {cities.slice(0, 4).map((c, i) => (
                 <span key={c}>
-                  <span className="text-xs font-medium" style={{ color: "#0a0a0b" }}>
+                  <span className="text-xs font-medium" style={{ color: "#1a1714" }}>
                     {c.length > 3 ? c.split(",")[0].trim().split(" ")[0] : c}
                   </span>
                   {i < Math.min(cities.length, 4) - 1 && (
-                    <span className="text-xs mx-1" style={{ color: "#a0a0b0" }}>→</span>
+                    <span className="text-xs mx-1" style={{ color: "#a09088" }}>→</span>
                   )}
                 </span>
               ))}
               {cities.length > 4 && (
-                <span className="text-xs" style={{ color: "#a0a0b0" }}>+{cities.length - 4}</span>
+                <span className="text-xs" style={{ color: "#a09088" }}>+{cities.length - 4}</span>
               )}
             </div>
           </div>
@@ -312,9 +273,9 @@ export default function TripSidebar({
       {allEvents.length > 0 && (
         <div
           className="rounded-2xl p-4"
-          style={{ border: "1px solid #ebebed" }}
+          style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}
         >
-          <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#6b6b7b" }}>
+          <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#6b5f54" }}>
             Próximos eventos
           </p>
           <div className="flex flex-col gap-3">
@@ -322,15 +283,15 @@ export default function TripSidebar({
               <div key={i} className="flex items-start gap-3">
                 <div
                   className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-sm"
-                  style={{ background: `${typeColor[event.type]}15` }}
+                  style={{ background: `${typeColor[event.type]}18` }}
                 >
                   {typeIcon[event.type]}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium truncate" style={{ color: "#0a0a0b" }}>
+                  <p className="text-sm font-medium truncate" style={{ color: "#1a1714" }}>
                     {event.label}
                   </p>
-                  <p className="text-xs" style={{ color: "#a0a0b0" }}>
+                  <p className="text-xs" style={{ color: "#a09088" }}>
                     {event.sub && `${event.sub} · `}
                     {format(parseISO(event.date), "d MMM · HH:mm", { locale: es })}
                   </p>
@@ -345,9 +306,9 @@ export default function TripSidebar({
       {participants.length > 0 && (
         <div
           className="rounded-2xl p-4"
-          style={{ border: "1px solid #ebebed" }}
+          style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}
         >
-          <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#6b6b7b" }}>
+          <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#6b5f54" }}>
             Viajeros
           </p>
           <div className="flex flex-col gap-2.5">
@@ -355,19 +316,19 @@ export default function TripSidebar({
               <div key={p.id} className="flex items-center gap-2.5">
                 <div
                   className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
-                  style={{ background: "#f0f0f2", color: "#0a0a0b" }}
+                  style={{ background: "#e8e0d8", color: "#1a1714" }}
                 >
                   {(p.nickname ?? p.first_name ?? "?")[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate" style={{ color: "#0a0a0b" }}>
+                  <p className="text-sm font-medium truncate" style={{ color: "#1a1714" }}>
                     {p.nickname ?? p.first_name ?? "Sin nombre"}
                   </p>
                 </div>
                 {p.isOwner && (
                   <span
                     className="text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0"
-                    style={{ background: "#f0f0f2", color: "#6b6b7b" }}
+                    style={{ background: "#e8e0d8", color: "#6b5f54" }}
                   >
                     owner
                   </span>
@@ -377,7 +338,6 @@ export default function TripSidebar({
           </div>
         </div>
       )}
-
     </div>
   );
 }

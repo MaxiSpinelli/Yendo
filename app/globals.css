@@ -8,6 +8,13 @@
   :root {
     --font-sans: 'DM Sans', system-ui, sans-serif;
     --font-display: 'DM Serif Display', Georgia, serif;
+
+    --color-bg:        #faf7f2;
+    --color-bg-soft:   #f0ebe3;
+    --color-border:    #e8e0d8;
+    --color-text:      #1a1714;
+    --color-muted:     #6b5f54;
+    --color-subtle:    #a09088;
   }
 
   * {
@@ -20,43 +27,85 @@
   }
 
   body {
-    @apply bg-cream text-navy-900 font-sans;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
   }
 
   input[type="date"],
   input[type="datetime-local"],
   input[type="time"] {
-    @apply appearance-none;
+    appearance: none;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber text-navy-900 font-medium text-sm transition-all hover:bg-amber-hover active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .btn-primary:hover {
+    opacity: 0.88;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-navy-700 font-medium text-sm border border-navy-100 transition-all hover:bg-cream active:scale-95 disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm transition-all active:scale-95 disabled:opacity-50;
+    background: var(--color-bg-soft);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-border);
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-navy-700 font-medium text-sm transition-all hover:bg-cream-dark active:scale-95;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all active:scale-95;
+    color: var(--color-muted);
+  }
+
+  .btn-ghost:hover {
+    background: var(--color-bg-soft);
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-red-50 text-red-600 font-medium text-sm border border-red-100 transition-all hover:bg-red-100 active:scale-95;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm transition-all active:scale-95;
+    background: #fff0ee;
+    color: #c4622d;
+    border: 1px solid #f0d0c8;
+  }
+
+  .btn-danger:hover {
+    background: #f0d0c8;
   }
 
   .input {
-    @apply w-full px-3.5 py-2.5 rounded-xl border border-navy-100 bg-white text-navy-900 text-sm placeholder:text-navy-300 outline-none transition-all focus:border-amber focus:ring-2 focus:ring-amber/20;
+    @apply w-full px-3.5 py-2.5 rounded-xl text-sm outline-none transition-all;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .input::placeholder {
+    color: var(--color-subtle);
+  }
+
+  .input:focus {
+    border-color: var(--color-muted);
+    box-shadow: 0 0 0 3px rgba(107, 95, 84, 0.12);
   }
 
   .label {
-    @apply block text-sm font-medium text-navy-700 mb-1.5;
+    @apply block text-sm font-medium mb-1.5;
+    color: var(--color-muted);
   }
 
   .card {
-    @apply bg-white rounded-2xl border border-navy-100 shadow-sm;
+    @apply rounded-2xl;
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
   }
 }
 

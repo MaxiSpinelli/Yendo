@@ -43,75 +43,69 @@ export default function AccommodationCard({ accommodation, onRefresh, canEdit = 
     <>
       <div
         className="rounded-2xl p-4 transition-all"
-        style={{ border: "1px solid #c8efe5", background: "#f0faf7" }}
+        style={{ border: "1px solid #c0d8cc", background: "#eaf4f0" }}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0 flex-1">
-            {/* Ícono */}
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
-              style={{ background: "#00a67e20" }}
+              style={{ background: "rgba(45,106,79,0.12)" }}
             >
               🏨
             </div>
 
             <div className="min-w-0 flex-1">
-              {/* Badge */}
               <div className="flex items-center gap-2 mb-1">
                 <span
                   className="text-xs font-semibold px-2 py-0.5 rounded-md"
-                  style={{ background: "#00a67e", color: "white" }}
+                  style={{ background: "#2d6a4f", color: "#faf7f2" }}
                 >
                   Hotel
                 </span>
                 {nights > 0 && (
-                  <span className="text-xs" style={{ color: "#00a67e" }}>
+                  <span className="text-xs" style={{ color: "#2d6a4f" }}>
                     {nights} {nights === 1 ? "noche" : "noches"}
                   </span>
                 )}
               </div>
 
-              {/* Nombre */}
-              <p className="font-semibold text-sm" style={{ color: "#0a0a0b" }}>
+              <p className="font-semibold text-sm" style={{ color: "#1a1714" }}>
                 {accommodation.name}
               </p>
 
-              {/* Dirección */}
               {accommodation.address && (
-                <p className="text-xs mt-0.5 truncate" style={{ color: "#6b6b7b" }}>
+                <p className="text-xs mt-0.5 truncate" style={{ color: "#6b5f54" }}>
                   📍 {accommodation.address}
                 </p>
               )}
 
-              {/* Check-in / Check-out */}
               <div className="flex items-center gap-3 mt-2 flex-wrap">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium" style={{ color: "#00a67e" }}>In</span>
-                  <span className="text-xs" style={{ color: "#0a0a0b" }}>{checkin}</span>
+                  <span className="text-xs font-medium" style={{ color: "#2d6a4f" }}>In</span>
+                  <span className="text-xs" style={{ color: "#1a1714" }}>{checkin}</span>
                 </div>
-                <div className="w-px h-3" style={{ background: "#c8efe5" }} />
+                <div className="w-px h-3" style={{ background: "#c0d8cc" }} />
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium" style={{ color: "#6b6b7b" }}>Out</span>
-                  <span className="text-xs" style={{ color: "#0a0a0b" }}>{checkout}</span>
+                  <span className="text-xs font-medium" style={{ color: "#6b5f54" }}>Out</span>
+                  <span className="text-xs" style={{ color: "#1a1714" }}>{checkout}</span>
                 </div>
               </div>
 
               {accommodation.notes && (
-                <p className="mt-2 text-xs px-3 py-1.5 rounded-lg" style={{ background: "#d4f5eb", color: "#007a5a" }}>
+                <p className="mt-2 text-xs px-3 py-1.5 rounded-lg" style={{ background: "#c8e8d8", color: "#1a4a34" }}>
                   {accommodation.notes}
                 </p>
               )}
             </div>
           </div>
 
-          {/* Acciones */}
           {canEdit && (
             <div className="flex items-center gap-1 flex-shrink-0">
               <button
                 onClick={() => setEditOpen(true)}
                 className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
-                style={{ color: "#00a67e" }}
-                onMouseEnter={(e) => e.currentTarget.style.background = "#c8efe5"}
+                style={{ color: "#2d6a4f" }}
+                onMouseEnter={(e) => e.currentTarget.style.background = "#c0d8cc"}
                 onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -121,9 +115,9 @@ export default function AccommodationCard({ accommodation, onRefresh, canEdit = 
               <button
                 onClick={() => setConfirmOpen(true)}
                 className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
-                style={{ color: "#00a67e" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "#fee8e8"; e.currentTarget.style.color = "#e53e3e"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#00a67e"; }}
+                style={{ color: "#2d6a4f" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#f5ede8"; e.currentTarget.style.color = "#c4622d"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#2d6a4f"; }}
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

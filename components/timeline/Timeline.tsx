@@ -25,8 +25,6 @@ interface TimelineProps {
   cities?: string[];
 }
 
-// ─── Lógica de agrupación por ciudad ─────────────────────────────────────────
-
 interface CitySegment {
   city: string;
   arrivalDate: string | null;
@@ -43,128 +41,59 @@ function buildCitySegments(
   accommodations: Accommodation[],
   activities: Activity[]
 ): CitySegment[] {
-  if (flights.length === 0 && accommodations.length === 0 && activities.length === 0) {
-    return [];
-  }
+  if (flights.length === 0 && accommodations.length === 0 && activities.length === 0) return [];
 
-  // Si no hay vuelos, agrupar todo bajo una sola ciudad
   if (flights.length === 0) {
     const city = accommodations[0]?.address?.split(",").slice(-2, -1)[0]?.trim()
-      ?? accommodations[0]?.name
-      ?? "Destino";
-
+      ?? accommodations[0]?.name ?? "Destino";
     const dayMap = new Map<string, Activity[]>();
     activities.forEach((a) => {
       const day = a.starts_at.slice(0, 10);
       if (!dayMap.has(day)) dayMap.set(day, []);
       dayMap.get(day)!.push(a);
     });
-
     const nights = accommodations.length > 0
-      ? differenceInDays(
-          parseISO(accommodations[0].checkout_at),
-          parseISO(accommodations[0].checkin_at)
-        )
+      ? differenceInDays(parseISO(accommodations[0].checkout_at), parseISO(accommodations[0].checkin_at))
       : 0;
-
-    return [{
-      city,
-      arrivalDate: accommodations[0]?.checkin_at ?? null,
-      departureDate: accommodations[0]?.checkout_at ?? null,
-      arrivalFlight: null,
-      departureFlight: null,
-      accommodation: accommodations[0] ?? null,
-      dayGroups: Array.from(dayMap.entries())
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([date, acts]) => ({ date, activities: acts })),
-      nights,
-    }];
+    return [{ city, arrivalDate: accommodations[0]?.checkin_at ?? null, departureDate: accommodations[0]?.checkout_at ?? null, arrivalFlight: null, departureFlight: null, accommodation: accommodations[0] ?? null, dayGroups: Array.from(dayMap.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([date, acts]) => ({ date, activities: acts })), nights }];
   }
 
-  // Con vuelos: construir segmentos origen → destino
-  const sortedFlights = [...flights].sort((a, b) =>
-    a.departure_at.localeCompare(b.departure_at)
-  );
-
+  const sortedFlights = [...flights].sort((a, b) => a.departure_at.localeCompare(b.departure_at));
   const segments: CitySegment[] = [];
 
-  // Ciudad de origen (antes del primer vuelo)
   const firstFlight = sortedFlights[0];
-  segments.push({
-    city: firstFlight.origin,
-    arrivalDate: null,
-    departureDate: firstFlight.departure_at,
-    arrivalFlight: null,
-    departureFlight: firstFlight,
-    accommodation: null,
-    dayGroups: [],
-    nights: 0,
-  });
+  segments.push({ city: firstFlight.origin, arrivalDate: null, departureDate: firstFlight.departure_at, arrivalFlight: null, departureFlight: firstFlight, accommodation: null, dayGroups: [], nights: 0 });
 
-  // Ciudades intermedias y final
   sortedFlights.forEach((flight, i) => {
     const nextFlight = sortedFlights[i + 1] ?? null;
     const city = flight.destination;
-
-    // Alojamiento en esta ciudad
     const accommodation = accommodations.find((a) =>
       a.address?.toLowerCase().includes(city.toLowerCase()) ||
       a.name?.toLowerCase().includes(city.toLowerCase())
     ) ?? accommodations[i] ?? null;
-
-    // Actividades en esta ciudad (entre llegada y próximo vuelo)
     const arriveAt = flight.departure_at;
     const leaveAt = nextFlight?.departure_at ?? null;
-
     const cityActivities = activities.filter((a) => {
       if (a.starts_at < arriveAt) return false;
       if (leaveAt && a.starts_at > leaveAt) return false;
       return true;
     });
-
     const dayMap = new Map<string, Activity[]>();
     cityActivities.forEach((a) => {
       const day = a.starts_at.slice(0, 10);
       if (!dayMap.has(day)) dayMap.set(day, []);
       dayMap.get(day)!.push(a);
     });
-
     const nights = accommodation
-      ? differenceInDays(
-          parseISO(accommodation.checkout_at),
-          parseISO(accommodation.checkin_at)
-        )
-      : nextFlight
-      ? differenceInDays(parseISO(nextFlight.departure_at), parseISO(flight.departure_at))
-      : 0;
-
-    segments.push({
-      city,
-      arrivalDate: flight.departure_at,
-      departureDate: nextFlight?.departure_at ?? null,
-      arrivalFlight: flight,
-      departureFlight: nextFlight,
-      accommodation,
-      dayGroups: Array.from(dayMap.entries())
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([date, acts]) => ({ date, activities: acts })),
-      nights,
-    });
+      ? differenceInDays(parseISO(accommodation.checkout_at), parseISO(accommodation.checkin_at))
+      : nextFlight ? differenceInDays(parseISO(nextFlight.departure_at), parseISO(flight.departure_at)) : 0;
+    segments.push({ city, arrivalDate: flight.departure_at, departureDate: nextFlight?.departure_at ?? null, arrivalFlight: flight, departureFlight: nextFlight, accommodation, dayGroups: Array.from(dayMap.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([date, acts]) => ({ date, activities: acts })), nights });
   });
 
   return segments;
 }
 
-// ─── Componente de segmento de ciudad ────────────────────────────────────────
-
-function CitySegmentBlock({
-  segment,
-  index,
-  isLast,
-  onRefresh,
-  canEdit,
-  onAdd,
-}: {
+function CitySegmentBlock({ segment, index, isLast, onRefresh, canEdit, onAdd }: {
   segment: CitySegment;
   index: number;
   isLast: boolean;
@@ -176,126 +105,70 @@ function CitySegmentBlock({
 
   return (
     <div className="relative">
-      {/* Línea vertical conectora */}
       {!isLast && (
         <div
           className="absolute left-5 z-0"
-          style={{
-            top: 48,
-            bottom: -32,
-            width: 2,
-            background: "linear-gradient(to bottom, #ebebed, transparent)",
-          }}
+          style={{ top: 48, bottom: -32, width: 2, background: "linear-gradient(to bottom, #e8e0d8, transparent)" }}
         />
       )}
 
-      {/* Header de ciudad */}
       <button
         onClick={() => setCollapsed((c) => !c)}
         className="relative z-10 w-full flex items-center gap-4 mb-4 group"
       >
-        {/* Dot */}
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 font-semibold text-sm transition-all group-hover:scale-105"
-          style={{
-            background: "#0a0a0b",
-            color: "white",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
-          }}
+          style={{ background: "#1a1714", color: "#faf7f2", boxShadow: "0 2px 12px rgba(26,23,20,0.2)" }}
         >
           {index + 1}
         </div>
-
-        {/* Info ciudad */}
         <div className="flex-1 text-left">
-          <h3 className="font-semibold text-lg" style={{ color: "#0a0a0b", lineHeight: 1.2 }}>
+          <h3 className="font-semibold text-lg" style={{ color: "#1a1714", lineHeight: 1.2 }}>
             {segment.city}
           </h3>
-          <p className="text-sm" style={{ color: "#6b6b7b" }}>
+          <p className="text-sm" style={{ color: "#6b5f54" }}>
             {segment.arrivalDate
               ? format(parseISO(segment.arrivalDate), "d MMM", { locale: es })
               : "Origen"}
             {segment.nights > 0 && ` · ${segment.nights} ${segment.nights === 1 ? "noche" : "noches"}`}
           </p>
         </div>
-
-        {/* Chevron */}
         <svg
           className="w-4 h-4 flex-shrink-0 transition-transform"
-          style={{
-            color: "#a0a0b0",
-            transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)",
-          }}
+          style={{ color: "#a09088", transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)" }}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
-      {/* Contenido del segmento */}
       {!collapsed && (
         <div className="ml-14 space-y-3 mb-2">
-
-          {/* Vuelo de llegada */}
           {segment.arrivalFlight && (
-            <FlightCard
-              flight={segment.arrivalFlight}
-              onRefresh={onRefresh}
-              canEdit={canEdit}
-            />
+            <FlightCard flight={segment.arrivalFlight} onRefresh={onRefresh} canEdit={canEdit} />
           )}
-
-          {/* Alojamiento */}
           {segment.accommodation && (
-            <AccommodationCard
-              accommodation={segment.accommodation}
-              onRefresh={onRefresh}
-              canEdit={canEdit}
-            />
+            <AccommodationCard accommodation={segment.accommodation} onRefresh={onRefresh} canEdit={canEdit} />
           )}
-
-          {/* Actividades agrupadas por día */}
           {segment.dayGroups.map(({ date, activities: acts }) => (
             <div key={date}>
-              <p
-                className="text-xs font-semibold uppercase tracking-wider mb-2 mt-4"
-                style={{ color: "#a0a0b0" }}
-              >
+              <p className="text-xs font-semibold uppercase tracking-wider mb-2 mt-4" style={{ color: "#a09088" }}>
                 {format(parseISO(date), "EEEE d MMM", { locale: es })}
               </p>
               <div className="space-y-2">
                 {acts.map((activity) => (
-                  <ActivityCard
-                    key={activity.id}
-                    activity={activity}
-                    onRefresh={onRefresh}
-                    canEdit={canEdit}
-                  />
+                  <ActivityCard key={activity.id} activity={activity} onRefresh={onRefresh} canEdit={canEdit} />
                 ))}
               </div>
             </div>
           ))}
-
-          {/* Botón agregar actividad en esta ciudad */}
           {canEdit && (
             <button
               onClick={() => onAdd("activity")}
               className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm transition-all"
-              style={{
-                border: "1px dashed #d0d0d8",
-                color: "#a0a0b0",
-                background: "transparent",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#f5620f";
-                e.currentTarget.style.color = "#f5620f";
-                e.currentTarget.style.background = "#fff8f5";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "#d0d0d8";
-                e.currentTarget.style.color = "#a0a0b0";
-                e.currentTarget.style.background = "transparent";
-              }}
+              style={{ border: "1px dashed #d8cfc8", color: "#a09088", background: "transparent" }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#c4622d"; e.currentTarget.style.color = "#c4622d"; e.currentTarget.style.background = "#f5ede5"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#d8cfc8"; e.currentTarget.style.color = "#a09088"; e.currentTarget.style.background = "transparent"; }}
             >
               <span>📍</span>
               Agregar actividad en {segment.city.split(",")[0]}
@@ -304,18 +177,17 @@ function CitySegmentBlock({
         </div>
       )}
 
-      {/* Conector entre ciudades — vuelo de salida */}
       {!isLast && segment.departureFlight && !collapsed && (
         <div
           className="ml-14 mb-4 flex items-center gap-3 py-2.5 px-4 rounded-xl"
-          style={{ background: "#f0f4ff", border: "1px solid #dde8ff" }}
+          style={{ background: "#eef2f8", border: "1px solid #c8d4e8" }}
         >
-          <span style={{ color: "#0066ff" }}>✈️</span>
+          <span style={{ color: "#2563eb" }}>✈️</span>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium" style={{ color: "#0066ff" }}>
+            <p className="text-sm font-medium" style={{ color: "#2563eb" }}>
               {segment.departureFlight.airline} {segment.departureFlight.flight_number}
             </p>
-            <p className="text-xs" style={{ color: "#6b96ff" }}>
+            <p className="text-xs" style={{ color: "#6b7fa0" }}>
               Sale {format(parseISO(segment.departureFlight.departure_at), "d MMM · HH:mm", { locale: es })}
               {" "}→ {segment.departureFlight.destination}
             </p>
@@ -326,8 +198,6 @@ function CitySegmentBlock({
   );
 }
 
-// ─── Timeline principal ───────────────────────────────────────────────────────
-
 export default function Timeline({
   tripId,
   initialFlights,
@@ -337,7 +207,6 @@ export default function Timeline({
   cities = [],
 }: TimelineProps) {
   const supabase = createClient();
-
   const [flights, setFlights] = useState(initialFlights);
   const [accommodations, setAccommodations] = useState(initialAccommodations);
   const [activities, setActivities] = useState(initialActivities);
@@ -361,39 +230,35 @@ export default function Timeline({
     <>
       <ToastProvider />
 
-      {/* Header con acciones */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="font-semibold text-lg" style={{ color: "#0a0a0b" }}>
-            Itinerario
-          </h2>
+          <h2 className="font-semibold text-lg" style={{ color: "#1a1714" }}>Itinerario</h2>
           {totalItems > 0 && (
-            <p className="text-sm mt-0.5" style={{ color: "#6b6b7b" }}>
+            <p className="text-sm mt-0.5" style={{ color: "#6b5f54" }}>
               {segments.length} {segments.length === 1 ? "destino" : "destinos"} · {totalItems} {totalItems === 1 ? "elemento" : "elementos"}
             </p>
           )}
         </div>
-
         {canEdit && (
           <div className="flex items-center gap-2">
             <button
               onClick={() => setAddModal("flight")}
               className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all"
-              style={{ background: "#f0f4ff", color: "#0066ff", border: "1px solid #dde8ff" }}
+              style={{ background: "#eef2f8", color: "#2563eb", border: "1px solid #c8d4e8" }}
             >
               ✈️ Vuelo
             </button>
             <button
               onClick={() => setAddModal("accommodation")}
               className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all"
-              style={{ background: "#f0faf7", color: "#00a67e", border: "1px solid #c8efe5" }}
+              style={{ background: "#eaf4f0", color: "#2d6a4f", border: "1px solid #c0d8cc" }}
             >
               🏨 Hotel
             </button>
             <button
               onClick={() => setAddModal("activity")}
               className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all"
-              style={{ background: "#fff8f5", color: "#f5620f", border: "1px solid #fde0cc" }}
+              style={{ background: "#f5ede5", color: "#c4622d", border: "1px solid #dfc8b8" }}
             >
               📍 Actividad
             </button>
@@ -401,11 +266,10 @@ export default function Timeline({
         )}
       </div>
 
-      {/* Viewer badge */}
       {!canEdit && (
         <div
           className="flex items-center gap-2 mb-6 px-4 py-2.5 rounded-xl text-sm"
-          style={{ background: "#f7f7f8", color: "#6b6b7b", border: "1px solid #ebebed" }}
+          style={{ background: "#f0ebe3", color: "#6b5f54", border: "1px solid #e8e0d8" }}
         >
           <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -415,38 +279,35 @@ export default function Timeline({
         </div>
       )}
 
-      {/* Estado vacío */}
       {totalItems === 0 && canEdit && (
         <div
           className="text-center py-16 rounded-2xl"
-          style={{ background: "#f7f7f8", border: "1px dashed #d0d0d8" }}
+          style={{ background: "#f0ebe3", border: "1px dashed #d8cfc8" }}
         >
           <p className="text-4xl mb-4">🗺️</p>
-          <h3 className="font-semibold mb-1" style={{ color: "#0a0a0b" }}>
-            El viaje está vacío
-          </h3>
-          <p className="text-sm mb-6" style={{ color: "#6b6b7b" }}>
+          <h3 className="font-semibold mb-1" style={{ color: "#1a1714" }}>El viaje está vacío</h3>
+          <p className="text-sm mb-6" style={{ color: "#6b5f54" }}>
             Agregá el primer vuelo para empezar a construir tu itinerario.
           </p>
           <div className="flex items-center justify-center gap-2 flex-wrap">
             <button
               onClick={() => setAddModal("flight")}
               className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl"
-              style={{ background: "#0066ff", color: "white" }}
+              style={{ background: "#2563eb", color: "#faf7f2" }}
             >
               ✈️ Agregar vuelo
             </button>
             <button
               onClick={() => setAddModal("accommodation")}
               className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl"
-              style={{ background: "#f7f7f8", color: "#0a0a0b", border: "1px solid #ebebed" }}
+              style={{ background: "#f0ebe3", color: "#1a1714", border: "1px solid #e8e0d8" }}
             >
               🏨 Agregar alojamiento
             </button>
             <button
               onClick={() => setAddModal("activity")}
               className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl"
-              style={{ background: "#f7f7f8", color: "#0a0a0b", border: "1px solid #ebebed" }}
+              style={{ background: "#f0ebe3", color: "#1a1714", border: "1px solid #e8e0d8" }}
             >
               📍 Agregar actividad
             </button>
@@ -454,7 +315,6 @@ export default function Timeline({
         </div>
       )}
 
-      {/* Segmentos por ciudad */}
       {segments.length > 0 && (
         <div className="space-y-8">
           {segments.map((segment, i) => (
@@ -471,29 +331,22 @@ export default function Timeline({
         </div>
       )}
 
-      {/* Modals */}
       {canEdit && (
         <>
           <Modal open={addModal === "flight"} onClose={() => setAddModal(null)} title="Agregar vuelo">
-            <FlightForm
-              tripId={tripId}
+            <FlightForm tripId={tripId}
               onSuccess={() => { setAddModal(null); refresh(); toast("Vuelo agregado"); }}
-              onCancel={() => setAddModal(null)}
-            />
+              onCancel={() => setAddModal(null)} />
           </Modal>
           <Modal open={addModal === "accommodation"} onClose={() => setAddModal(null)} title="Agregar alojamiento">
-            <AccommodationForm
-              tripId={tripId}
+            <AccommodationForm tripId={tripId}
               onSuccess={() => { setAddModal(null); refresh(); toast("Alojamiento agregado"); }}
-              onCancel={() => setAddModal(null)}
-            />
+              onCancel={() => setAddModal(null)} />
           </Modal>
           <Modal open={addModal === "activity"} onClose={() => setAddModal(null)} title="Agregar actividad">
-            <ActivityForm
-              tripId={tripId}
+            <ActivityForm tripId={tripId}
               onSuccess={() => { setAddModal(null); refresh(); toast("Actividad agregada"); }}
-              onCancel={() => setAddModal(null)}
-            />
+              onCancel={() => setAddModal(null)} />
           </Modal>
         </>
       )}
