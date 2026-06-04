@@ -59,3 +59,9 @@
     @apply bg-white rounded-2xl border border-navy-100 shadow-sm;
   }
 }
+
+@media (max-width: 640px) {
+  .hero-side-img {
+    display: none !important;
+  }
+}
