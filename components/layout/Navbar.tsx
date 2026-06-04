@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import YendoLogo from "@/components/ui/YendoLogo";
 
 interface NavbarProps {
   email?: string;
@@ -42,14 +43,12 @@ export default function Navbar({ email, userName, breadcrumb }: NavbarProps) {
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "0 24px", width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
 
         {/* Izquierda: logo + breadcrumb */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Link
-            href="/dashboard"
-            style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontWeight: 700, fontSize: "20px", color: "#1a1714", textDecoration: "none" }}
-          >
-            Yendo
-          </Link>
-          {breadcrumb && (
+        {/* Izquierda: logo + breadcrumb */}
+<div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+  <Link href="/dashboard" style={{ textDecoration: "none" }}>
+    <YendoLogo height={28} color="#1a1714" />
+  </Link>
+  {breadcrumb && (
             <>
               <span style={{ fontSize: "16px", color: "#c8bdb5", margin: "0 2px" }}>/</span>
               <Link

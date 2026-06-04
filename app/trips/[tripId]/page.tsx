@@ -7,6 +7,8 @@ import TripStats from "@/components/trips/TripStats";
 import TripSidebar from "@/components/trips/TripSidebar";
 import ShareButton from "@/components/trips/ShareButton";
 import { differenceInDays, parseISO } from "date-fns";
+import MobileSidebarDrawer from "@/components/trips/MobileSidebarDrawer";
+
 
 interface Props {
   params: Promise<{ tripId: string }>;
@@ -27,17 +29,19 @@ export default async function TripPage({ params }: Props) {
 
   if (!trip) notFound();
 
-  const [flightsRes, accommodationsRes, activitiesRes, membersRes, ownerProfileRes] = await Promise.all([
+  const [flightsRes, accommodationsRes, activitiesRes, membersRes, ownerProfileRes, myTicketsRes] = await Promise.all([
     supabase.from("flights").select("*").eq("trip_id", tripId).order("departure_at"),
     supabase.from("accommodations").select("*").eq("trip_id", tripId).order("checkin_at"),
     supabase.from("activities").select("*").eq("trip_id", tripId).order("starts_at"),
     supabase.from("trip_members").select("user_id, role").eq("trip_id", tripId),
     supabase.from("profiles").select("nickname, first_name").eq("id", trip.owner_id).single(),
+    supabase.from("personal_tickets").select("cost").eq("trip_id", tripId).eq("user_id", user.id),
   ]);
 
   const flights = flightsRes.data ?? [];
   const accommodations = accommodationsRes.data ?? [];
   const activities = activitiesRes.data ?? [];
+  const myTickets = myTicketsRes.data ?? [];
 
   const memberIds = (membersRes.data ?? []).map((m) => m.user_id);
   let memberProfiles: { id: string; nickname: string | null; first_name: string | null }[] = [];
@@ -79,7 +83,7 @@ export default async function TripPage({ params }: Props) {
     ]),
   ];
 
-  return (
+return (
     <div className="min-h-screen bg-white">
 
       {/* Hero — 65vh */}
@@ -127,11 +131,26 @@ export default async function TripPage({ params }: Props) {
               accommodations={accommodations}
               activities={activities}
               cities={cities}
+              myTickets={myTickets}
+              participantCount={allParticipants.length}
             />
           </aside>
 
         </div>
       </div>
+
+      {/* Drawer mobile */}
+      <MobileSidebarDrawer
+        trip={trip}
+        participants={allParticipants}
+        flights={flights}
+        accommodations={accommodations}
+        activities={activities}
+        cities={cities}
+        myTickets={myTickets}
+        participantCount={allParticipants.length}
+      />
+
     </div>
   );
 }

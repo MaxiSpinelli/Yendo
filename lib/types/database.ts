@@ -151,6 +151,8 @@ export interface Database {
           checkin_at: string
           checkout_at: string
           notes: string | null
+          cost: number | null
+          cost_type: "total" | "per_person" | null
           created_at: string
         }
         Insert: {
@@ -161,6 +163,8 @@ export interface Database {
           checkin_at: string
           checkout_at: string
           notes?: string | null
+          cost?: number | null
+          cost_type?: "total" | "per_person" | null
           created_at?: string
         }
         Update: {
@@ -169,6 +173,8 @@ export interface Database {
           checkin_at?: string
           checkout_at?: string
           notes?: string | null
+          cost?: number | null
+          cost_type?: "total" | "per_person" | null
         }
         Relationships: [
           {
@@ -224,6 +230,7 @@ export interface Database {
           seat: string | null
           pnr: string | null
           notes: string | null
+          cost: number | null
           created_at: string
         }
         Insert: {
@@ -236,6 +243,7 @@ export interface Database {
           seat?: string | null
           pnr?: string | null
           notes?: string | null
+          cost?: number | null
           created_at?: string
         }
         Update: {
@@ -244,6 +252,7 @@ export interface Database {
           seat?: string | null
           pnr?: string | null
           notes?: string | null
+          cost?: number | null
         }
         Relationships: []
       }

@@ -24,7 +24,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
   const [ticket, setTicket] = useState<PersonalTicket | null>(null);
   const [ticketOpen, setTicketOpen] = useState(false);
   const [ticketForm, setTicketForm] = useState({
-    airline: "", flight_number: "", seat: "", pnr: "", notes: "",
+    airline: "", flight_number: "", seat: "", pnr: "", notes: "", cost: "",
   });
   const [savingTicket, setSavingTicket] = useState(false);
   const [confirmTicketDelete, setConfirmTicketDelete] = useState(false);
@@ -40,8 +40,12 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
     if (data) {
       setTicket(data);
       setTicketForm({
-        airline: data.airline ?? "", flight_number: data.flight_number ?? "",
-        seat: data.seat ?? "", pnr: data.pnr ?? "", notes: data.notes ?? "",
+        airline: data.airline ?? "",
+        flight_number: data.flight_number ?? "",
+        seat: data.seat ?? "",
+        pnr: data.pnr ?? "",
+        notes: data.notes ?? "",
+        cost: data.cost?.toString() ?? "",
       });
     }
   }
@@ -59,12 +63,22 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
     setSavingTicket(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    const payload = {
+      airline: ticketForm.airline || null,
+      flight_number: ticketForm.flight_number || null,
+      seat: ticketForm.seat || null,
+      pnr: ticketForm.pnr || null,
+      notes: ticketForm.notes || null,
+      cost: ticketForm.cost ? parseFloat(ticketForm.cost) : null,
+    };
+
     let error;
     if (ticket) {
-      ({ error } = await supabase.from("personal_tickets").update(ticketForm).eq("id", ticket.id));
+      ({ error } = await supabase.from("personal_tickets").update(payload).eq("id", ticket.id));
     } else {
       ({ error } = await supabase.from("personal_tickets").insert({
-        flight_id: flight.id, trip_id: flight.trip_id, user_id: user.id, ...ticketForm,
+        flight_id: flight.id, trip_id: flight.trip_id, user_id: user.id, ...payload,
       }));
     }
     setSavingTicket(false);
@@ -76,7 +90,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
     if (!ticket) return;
     await supabase.from("personal_tickets").delete().eq("id", ticket.id);
     setTicket(null);
-    setTicketForm({ airline: "", flight_number: "", seat: "", pnr: "", notes: "" });
+    setTicketForm({ airline: "", flight_number: "", seat: "", pnr: "", notes: "", cost: "" });
     setConfirmTicketDelete(false);
     toast("Pasaje eliminado");
   }
@@ -193,6 +207,11 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
                 {ticket.pnr && <span>PNR: <strong style={{ color: "#1a1714" }}>{ticket.pnr}</strong></span>}
                 {ticket.airline && <span>Aerolínea: {ticket.airline}</span>}
                 {ticket.flight_number && <span>Vuelo: {ticket.flight_number}</span>}
+                {ticket.cost && (
+                  <span className="col-span-2">
+                    Costo: <strong style={{ color: "#1a1714" }}>${ticket.cost.toLocaleString("es-AR")}</strong>
+                  </span>
+                )}
                 {ticket.notes && <span className="col-span-2">{ticket.notes}</span>}
               </div>
             </div>
@@ -245,6 +264,29 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
               </div>
             ))}
           </div>
+
+          {/* Costo del pasaje */}
+          <div>
+            <label className="block text-xs font-medium mb-1" style={{ color: "#6b5f54" }}>
+              Costo del pasaje (opcional)
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              className="w-full text-sm px-3 py-2 rounded-lg outline-none transition-all"
+              style={{ border: "1px solid #e8e0d8", background: "#faf7f2", color: "#1a1714" }}
+              value={ticketForm.cost}
+              onChange={(e) => setTicketForm((f) => ({ ...f, cost: e.target.value }))}
+              placeholder="Ej: 350"
+              onFocus={(e) => e.currentTarget.style.borderColor = "#2563eb"}
+              onBlur={(e) => e.currentTarget.style.borderColor = "#e8e0d8"}
+            />
+            <p className="text-xs mt-1" style={{ color: "#a09088" }}>
+              Se usa para calcular el costo total de tu viaje.
+            </p>
+          </div>
+
           <div>
             <label className="block text-xs font-medium mb-1" style={{ color: "#6b5f54" }}>Notas</label>
             <input
@@ -257,9 +299,25 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
               onBlur={(e) => e.currentTarget.style.borderColor = "#e8e0d8"}
             />
           </div>
+
           <div className="flex gap-3 pt-1">
-            <button onClick={() => setTicketOpen(false)} className="btn-secondary flex-1">Cancelar</button>
-            <button onClick={handleSaveTicket} disabled={savingTicket} className="btn-primary flex-1">
+            <button
+              onClick={() => setTicketOpen(false)}
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+              style={{ border: "1.5px solid #e8e0d8", color: "#6b5f54", background: "#faf7f2" }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "#f0ebe3"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "#faf7f2"}
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSaveTicket}
+              disabled={savingTicket}
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+              style={{ background: savingTicket ? "#2563eb80" : "#2563eb", color: "white" }}
+              onMouseEnter={(e) => { if (!savingTicket) e.currentTarget.style.background = "#1d4ed8"; }}
+              onMouseLeave={(e) => { if (!savingTicket) e.currentTarget.style.background = "#2563eb"; }}
+            >
               {savingTicket ? "Guardando..." : "Guardar"}
             </button>
           </div>

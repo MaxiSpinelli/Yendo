@@ -31,6 +31,8 @@ export default function AccommodationForm({
     checkin_at: existing ? isoToLocal(existing.checkin_at) : "",
     checkout_at: existing ? isoToLocal(existing.checkout_at) : "",
     notes: existing?.notes ?? "",
+    cost: existing?.cost?.toString() ?? "",
+    cost_type: (existing?.cost_type ?? "total") as "total" | "per_person",
   });
 
   function set(field: string, value: string) {
@@ -48,12 +50,16 @@ export default function AccommodationForm({
       return;
     }
 
+    const costValue = form.cost ? parseFloat(form.cost) : null;
+
     const shared = {
       name: form.name,
       address: form.address,
       checkin_at: localToISO(form.checkin_at),
       checkout_at: localToISO(form.checkout_at),
       notes: form.notes || null,
+      cost: costValue,
+      cost_type: costValue ? form.cost_type : null,
     };
 
     const { error } = existing
@@ -104,6 +110,63 @@ export default function AccommodationForm({
         />
       </div>
 
+      {/* Costo */}
+      <div
+        className="rounded-2xl p-4"
+        style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}
+      >
+        <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#6b5f54" }}>
+          Costo (opcional)
+        </p>
+
+        {/* Toggle total / por persona */}
+        <div
+          className="flex rounded-xl p-1 mb-3"
+          style={{ background: "#e8e0d8" }}
+        >
+          {(["total", "per_person"] as const).map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => setForm((f) => ({ ...f, cost_type: opt }))}
+              className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-all"
+              style={{
+                background: form.cost_type === opt ? "#faf7f2" : "transparent",
+                color: form.cost_type === opt ? "#1a1714" : "#6b5f54",
+                boxShadow: form.cost_type === opt ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+              }}
+            >
+              {opt === "total" ? "Total" : "Por persona"}
+            </button>
+          ))}
+        </div>
+
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder={form.cost_type === "total" ? "Ej: 400" : "Ej: 200"}
+          value={form.cost}
+          onChange={(e) => set("cost", e.target.value)}
+          className="w-full text-sm px-3.5 py-2.5 rounded-xl outline-none transition-all"
+          style={{ border: "1.5px solid #e8e0d8", background: "#faf7f2", color: "#1a1714" }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "#2d6a4f";
+            e.currentTarget.style.boxShadow = "0 0 0 3px #2d6a4f18";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = "#e8e0d8";
+            e.currentTarget.style.boxShadow = "none";
+          }}
+        />
+
+        {form.cost && form.cost_type === "total" && (
+          <p className="text-xs mt-2" style={{ color: "#a09088" }}>
+            Se dividirá por la cantidad de viajeros al mostrar el resumen.
+          </p>
+        )}
+      </div>
+
       <Textarea
         label="Observaciones (opcional)"
         placeholder="Ej: confirmar reserva 48hs antes, piso 4, habitación doble"
@@ -113,7 +176,7 @@ export default function AccommodationForm({
       />
 
       {error && (
-        <div className="bg-red-50 border border-red-100 rounded-xl p-3 text-xs text-red-600">
+        <div className="rounded-xl p-3 text-xs" style={{ background: "#fff8f5", border: "1px solid #e8e0d8", color: "#c4622d" }}>
           {error}
         </div>
       )}

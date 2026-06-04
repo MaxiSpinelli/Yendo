@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { Trip, Flight, Accommodation, Activity } from "@/lib/types/database";
-import { formatDateTime, formatDate } from "@/lib/utils/date";
+import { formatDate } from "@/lib/utils/date";
 import { differenceInDays, parseISO, isPast, isFuture, format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -13,6 +13,10 @@ interface Participant {
   isOwner: boolean;
 }
 
+interface MyTicket {
+  cost: number | null;
+}
+
 interface TripSidebarProps {
   trip: Trip;
   participants: Participant[];
@@ -20,50 +24,8 @@ interface TripSidebarProps {
   accommodations: Accommodation[];
   activities: Activity[];
   cities: string[];
-}
-
-const CITY_COORDS: Record<string, [number, number]> = {
-  EZE: [-34.8222, -58.5358], BUE: [-34.6037, -58.3816],
-  GRU: [-23.4356, -46.4731], GIG: [-22.8099, -43.2505],
-  SCL: [-33.3929, -70.7858], LIM: [-12.0219, -77.1143],
-  BOG: [4.7016, -74.1469],  MEX: [19.4363, -99.0721],
-  MIA: [25.7959, -80.2870], JFK: [40.6413, -73.7781],
-  LAX: [33.9425, -118.4081], ORD: [41.9742, -87.9073],
-  LHR: [51.4700, -0.4543],  CDG: [48.8566,  2.3522],
-  MAD: [40.4983, -3.5676],  BCN: [41.2974,  2.0833],
-  FCO: [41.8003,  12.2389], MXP: [45.6306,  8.7281],
-  AMS: [52.3086,  4.7639],  FRA: [50.0379,  8.5622],
-  MUC: [48.3538, 11.7861],  ZRH: [47.4647,  8.5492],
-  DXB: [25.2532, 55.3657],  SIN: [1.3644,  103.9915],
-  NRT: [35.7720, 140.3929], HND: [35.5494, 139.7798],
-  SYD: [-33.9399, 151.1753],
-  "buenos aires": [-34.6037, -58.3816],
-  "paris": [48.8566, 2.3522], "parís": [48.8566, 2.3522],
-  "london": [51.5074, -0.1278], "londres": [51.5074, -0.1278],
-  "rome": [41.9028, 12.4964], "roma": [41.9028, 12.4964],
-  "barcelona": [41.3851, 2.1734],
-  "madrid": [40.4168, -3.7038],
-  "new york": [40.7128, -74.0060], "nueva york": [40.7128, -74.0060],
-  "miami": [25.7617, -80.1918],
-  "tokyo": [35.6762, 139.6503], "tokio": [35.6762, 139.6503],
-  "sydney": [-33.8688, 151.2093],
-  "amsterdam": [52.3676, 4.9041],
-  "berlin": [52.5200, 13.4050], "berlín": [52.5200, 13.4050],
-  "dubai": [25.2048, 55.2708],
-  "singapore": [1.3521, 103.8198], "singapur": [1.3521, 103.8198],
-  "mexico": [19.4326, -99.1332], "ciudad de mexico": [19.4326, -99.1332],
-  "lima": [-12.0464, -77.0428],
-  "bogota": [4.7110, -74.0721], "bogotá": [4.7110, -74.0721],
-  "santiago": [-33.4489, -70.6693],
-};
-
-function getCityCoords(name: string): [number, number] | null {
-  const key = name.toLowerCase().trim();
-  if (CITY_COORDS[key]) return CITY_COORDS[key];
-  for (const [k, v] of Object.entries(CITY_COORDS)) {
-    if (key.includes(k) || k.includes(key)) return v;
-  }
-  return null;
+  myTickets: MyTicket[];
+  participantCount: number;
 }
 
 function getCountdown(startDate: string): { label: string; value: string } {
@@ -80,107 +42,8 @@ function getCountdown(startDate: string): { label: string; value: string } {
   return { label: "Faltan", value: `${days} días` };
 }
 
-function TripMap({ cities }: { cities: string[] }) {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<any>(null);
-
-  useEffect(() => {
-    if (!mapRef.current || mapInstance.current) return;
-
-    const points = cities
-      .map((c) => ({ name: c, coords: getCityCoords(c) }))
-      .filter((p) => p.coords !== null) as { name: string; coords: [number, number] }[];
-
-    if (points.length === 0) return;
-
-    import("leaflet").then((L) => {
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-      });
-
-      const map = L.map(mapRef.current!, {
-        zoomControl: false,
-        attributionControl: false,
-        scrollWheelZoom: false,
-        dragging: points.length > 1,
-      });
-
-      mapInstance.current = map;
-
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        maxZoom: 19,
-      }).addTo(map);
-
-      const customIcon = L.divIcon({
-        className: "",
-        html: `<div style="
-          width:12px;height:12px;
-          background:#2d6a4f;
-          border:2px solid #faf7f2;
-          border-radius:50%;
-          box-shadow:0 2px 6px rgba(45,106,79,0.4);
-        "></div>`,
-        iconSize: [12, 12],
-        iconAnchor: [6, 6],
-      });
-
-      points.forEach((p) => {
-        L.marker(p.coords, { icon: customIcon })
-          .addTo(map)
-          .bindTooltip(p.name, {
-            permanent: false,
-            direction: "top",
-            offset: [0, -8],
-            className: "leaflet-tooltip-custom",
-          });
-      });
-
-      if (points.length > 1) {
-        L.polyline(points.map((p) => p.coords), {
-          color: "#2d6a4f",
-          weight: 2,
-          opacity: 0.5,
-          dashArray: "6 6",
-        }).addTo(map);
-      }
-
-      const bounds = L.latLngBounds(points.map((p) => p.coords));
-      map.fitBounds(bounds, { padding: [24, 24] });
-    });
-
-    return () => {
-      if (mapInstance.current) {
-        mapInstance.current.remove();
-        mapInstance.current = null;
-      }
-    };
-  }, [cities]);
-
-  return (
-    <>
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-      <style>{`
-        .leaflet-tooltip-custom {
-          background: #1a1714;
-          color: #faf7f2;
-          border: none;
-          border-radius: 6px;
-          font-size: 11px;
-          font-weight: 500;
-          padding: 4px 8px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        .leaflet-tooltip-custom::before { display: none; }
-      `}</style>
-      <div
-        ref={mapRef}
-        style={{ width: "100%", height: 200, borderRadius: 12, overflow: "hidden" }}
-      />
-    </>
-  );
+function formatCost(amount: number): string {
+  return amount.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
 export default function TripSidebar({
@@ -190,6 +53,8 @@ export default function TripSidebar({
   accommodations,
   activities,
   cities,
+  myTickets,
+  participantCount,
 }: TripSidebarProps) {
   const countdown = getCountdown(trip.start_date);
 
@@ -220,6 +85,21 @@ export default function TripSidebar({
   const typeIcon = { flight: "✈️", accommodation: "🏨", activity: "📍" };
   const typeColor = { flight: "#2563eb", accommodation: "#2d6a4f", activity: "#c4622d" };
 
+  // ── Cálculo de costos ──────────────────────────────────────────────────────
+
+  // Alojamiento: si es total → divide por participantes; si es per_person → usa directo
+  const accommodationCost = accommodations.reduce((sum, a) => {
+    if (!a.cost) return sum;
+    if (a.cost_type === "total") return sum + a.cost / participantCount;
+    return sum + a.cost;
+  }, 0);
+
+  // Vuelos: suma de mis pasajes personales
+  const flightCost = myTickets.reduce((sum, t) => sum + (t.cost ?? 0), 0);
+
+  const totalCost = accommodationCost + flightCost;
+  const hasCosts = accommodationCost > 0 || flightCost > 0;
+
   return (
     <div className="flex flex-col gap-4">
 
@@ -238,36 +118,6 @@ export default function TripSidebar({
           {format(parseISO(trip.start_date), "d 'de' MMMM, yyyy", { locale: es })}
         </p>
       </div>
-
-      {/* Mapa */}
-      {cities.length > 0 && (
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{ border: "1px solid #e8e0d8" }}
-        >
-          <div className="px-4 pt-4 pb-3 flex items-center justify-between" style={{ background: "#f0ebe3" }}>
-            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b5f54" }}>
-              Ruta
-            </p>
-            <div className="flex items-center gap-1.5">
-              {cities.slice(0, 4).map((c, i) => (
-                <span key={c}>
-                  <span className="text-xs font-medium" style={{ color: "#1a1714" }}>
-                    {c.length > 3 ? c.split(",")[0].trim().split(" ")[0] : c}
-                  </span>
-                  {i < Math.min(cities.length, 4) - 1 && (
-                    <span className="text-xs mx-1" style={{ color: "#a09088" }}>→</span>
-                  )}
-                </span>
-              ))}
-              {cities.length > 4 && (
-                <span className="text-xs" style={{ color: "#a09088" }}>+{cities.length - 4}</span>
-              )}
-            </div>
-          </div>
-          <TripMap cities={cities} />
-        </div>
-      )}
 
       {/* Próximos eventos */}
       {allEvents.length > 0 && (
@@ -338,6 +188,60 @@ export default function TripSidebar({
           </div>
         </div>
       )}
+
+      {/* Resumen de costos */}
+      {hasCosts && (
+        <div
+          className="rounded-2xl p-4"
+          style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}
+        >
+          <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#6b5f54" }}>
+            Costos estimados
+          </p>
+          <div className="flex flex-col gap-2.5">
+
+            {accommodationCost > 0 && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">🏨</span>
+                  <span className="text-sm" style={{ color: "#6b5f54" }}>Alojamiento</span>
+                </div>
+                <span className="text-sm font-medium" style={{ color: "#1a1714" }}>
+                  ${formatCost(accommodationCost)}
+                </span>
+              </div>
+            )}
+
+            {flightCost > 0 && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">✈️</span>
+                  <span className="text-sm" style={{ color: "#6b5f54" }}>Vuelos</span>
+                </div>
+                <span className="text-sm font-medium" style={{ color: "#1a1714" }}>
+                  ${formatCost(flightCost)}
+                </span>
+              </div>
+            )}
+
+            <div
+              className="flex items-center justify-between pt-2.5 mt-0.5"
+              style={{ borderTop: "1px solid #e8e0d8" }}
+            >
+              <span className="text-sm font-semibold" style={{ color: "#1a1714" }}>Total por persona</span>
+              <span className="text-sm font-bold" style={{ color: "#1a1714" }}>
+                ${formatCost(totalCost)}
+              </span>
+            </div>
+
+          </div>
+
+          <p className="text-xs mt-3" style={{ color: "#a09088" }}>
+            Estimado en base a los costos cargados. No incluye gastos personales ni actividades.
+          </p>
+        </div>
+      )}
+
     </div>
   );
 }

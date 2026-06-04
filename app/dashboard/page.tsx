@@ -36,19 +36,19 @@ function NextTripCard({ trip, participants }: { trip: Trip; participants: string
 
   return (
     <Link href={`/trips/${trip.id}`} style={{ textDecoration: "none", display: "block" }}>
-      <div style={{ background: "#1a1714", borderRadius: "20px", padding: "32px", height: "100%" }}>
+      <div style={{ background: "#1a1714", borderRadius: "20px", padding: "28px", height: "100%" }}>
         <p style={{ fontSize: "11px", color: "rgba(250,247,242,0.35)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 8px" }}>
           {isOngoing ? "Viaje en curso" : "Próxima aventura"}
         </p>
 
-        <p style={{ fontSize: "26px", fontWeight: 500, color: "#faf7f2", margin: "0 0 20px", fontFamily: "var(--font-display)", fontStyle: "italic" }}>
+        <p style={{ fontSize: "24px", fontWeight: 500, color: "#faf7f2", margin: "0 0 16px", fontFamily: "var(--font-display)", fontStyle: "italic" }}>
           {trip.name}
         </p>
 
-        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px", marginBottom: "24px" }}>
+        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px", marginBottom: "20px" }}>
           {cities.map((city, i) => (
             <div key={city} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ background: "rgba(250,247,242,0.1)", border: "1px solid rgba(250,247,242,0.15)", borderRadius: "99px", padding: "6px 14px", fontSize: "13px", color: "rgba(250,247,242,0.9)" }}>
+              <span style={{ background: "rgba(250,247,242,0.1)", border: "1px solid rgba(250,247,242,0.15)", borderRadius: "99px", padding: "5px 12px", fontSize: "12px", color: "rgba(250,247,242,0.9)" }}>
                 {city}
               </span>
               {i < cities.length - 1 && (
@@ -58,9 +58,9 @@ function NextTripCard({ trip, participants }: { trip: Trip; participants: string
           ))}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "rgba(250,247,242,0.5)" }}>
-            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}>
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "rgba(250,247,242,0.4)", flexShrink: 0 }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span style={{ color: "rgba(250,247,242,0.85)" }}>
@@ -68,8 +68,8 @@ function NextTripCard({ trip, participants }: { trip: Trip; participants: string
             </span>
           </div>
           {participants.length > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "rgba(250,247,242,0.5)" }}>
-              <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}>
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "rgba(250,247,242,0.4)", flexShrink: 0 }}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span style={{ color: "rgba(250,247,242,0.85)" }}>
@@ -80,17 +80,17 @@ function NextTripCard({ trip, participants }: { trip: Trip; participants: string
         </div>
 
         {!isOngoing && days > 0 && (
-          <div style={{ marginBottom: "24px" }}>
-            <span style={{ fontSize: "36px", fontWeight: 500, color: "#c4622d", lineHeight: 1 }}>{days}</span>
+          <div style={{ marginBottom: "20px" }}>
+            <span style={{ fontSize: "32px", fontWeight: 500, color: "#c4622d", lineHeight: 1 }}>{days}</span>
             <span style={{ fontSize: "13px", color: "rgba(250,247,242,0.35)", marginLeft: "8px" }}>
               días para despegar
             </span>
           </div>
         )}
 
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#faf7f2", color: "#1a1714", borderRadius: "99px", padding: "10px 20px", fontSize: "13px", fontWeight: 500 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#faf7f2", color: "#1a1714", borderRadius: "99px", padding: "9px 18px", fontSize: "13px", fontWeight: 500 }}>
           Ver itinerario
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
         </div>
@@ -102,10 +102,8 @@ function NextTripCard({ trip, participants }: { trip: Trip; participants: string
 function UpcomingEvents({ events }: { events: UpcomingEvent[] }) {
   const iconBg = (type: string) =>
     type === "flight" ? "#e8f0ff" : type === "accommodation" ? "#e8f5ee" : "#f5ede8";
-
   const iconColor = (type: string) =>
     type === "flight" ? "#2563eb" : type === "accommodation" ? "#2d6a4f" : "#c4622d";
-
   const iconPath = (type: string) => {
     if (type === "flight") return "M12 19l9 2-9-18-9 18 9-2zm0 0v-8";
     if (type === "accommodation") return "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z";
@@ -113,13 +111,13 @@ function UpcomingEvents({ events }: { events: UpcomingEvent[] }) {
   };
 
   return (
-    <div style={{ background: "#f0ebe3", border: "1px solid #e8e0d8", borderRadius: "20px", padding: "20px", display: "flex", flexDirection: "column" }}>
+    <div style={{ background: "#f0ebe3", border: "1px solid #e8e0d8", borderRadius: "20px", padding: "20px" }}>
       <p style={{ fontSize: "11px", color: "#a09088", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 16px" }}>
         Próximos eventos
       </p>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        {events.map((event, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "12px", padding: "12px 0", borderBottom: i < events.length - 1 ? "1px solid #e8e0d8" : "none" }}>
+       {events.map((event, i) => (
+  <div key={i} className={i === 2 ? "hidden sm:flex" : "flex"} style={{ alignItems: "flex-start", gap: "12px", padding: "12px 0", borderBottom: i < events.length - 1 ? "1px solid #e8e0d8" : "none" }}>
             <div style={{ width: "34px", height: "34px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: iconBg(event.type) }}>
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke={iconColor(event.type)} strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d={iconPath(event.type)} />
@@ -141,7 +139,6 @@ function UpcomingEvents({ events }: { events: UpcomingEvent[] }) {
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
@@ -169,22 +166,13 @@ export default async function DashboardPage() {
   let participantNames: string[] = [];
   if (nextTrip) {
     const { data: members } = await supabase
-      .from("trip_members")
-      .select("user_id")
-      .eq("trip_id", nextTrip.id);
-
+      .from("trip_members").select("user_id").eq("trip_id", nextTrip.id);
     const memberIds = (members ?? []).map((m) => m.user_id);
     const allIds = [nextTrip.owner_id, ...memberIds].filter(Boolean);
-
     if (allIds.length > 0) {
       const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id, nickname, first_name")
-        .in("id", allIds);
-
-      participantNames = (profiles ?? []).map(
-        (p) => p.nickname ?? p.first_name ?? "Viajero"
-      );
+        .from("profiles").select("id, nickname, first_name").in("id", allIds);
+      participantNames = (profiles ?? []).map((p) => p.nickname ?? p.first_name ?? "Viajero");
     }
   }
 
@@ -228,9 +216,10 @@ export default async function DashboardPage() {
     <div style={{ minHeight: "100vh", background: "#faf7f2", fontFamily: "var(--font-sans)" }}>
       <Navbar email={user.email} userName={displayName} />
 
-      <main style={{ maxWidth: "900px", margin: "0 auto", padding: "32px 24px" }}>
+      <main style={{ maxWidth: "900px", margin: "0 auto", padding: "24px 16px" }}>
 
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "28px" }}>
+        {/* Header */}
+        <div className="flex items-start justify-between mb-6">
           <div>
             <h1 style={{ fontSize: "22px", fontWeight: 500, color: "#1a1714", margin: "0 0 4px" }}>
               Hola, {displayName}
@@ -245,7 +234,8 @@ export default async function DashboardPage() {
           </div>
           <Link
             href="/trips/new"
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#1a1714", color: "#faf7f2", borderRadius: "99px", padding: "10px 20px", fontSize: "13px", fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}
+            className="hidden sm:inline-flex items-center gap-1.5"
+            style={{ background: "#1a1714", color: "#faf7f2", borderRadius: "99px", padding: "10px 20px", fontSize: "13px", fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}
           >
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -254,19 +244,21 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
+        {/* Próximo viaje — stack en mobile, grid en desktop */}
         {nextTrip && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: "12px", marginBottom: "36px" }}>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_260px] gap-3 mb-8">
             <NextTripCard trip={nextTrip} participants={participantNames} />
             <UpcomingEvents events={upcomingEvents} />
           </div>
         )}
 
+        {/* Mis viajes — 2 cols en mobile, 4 en desktop */}
         {allTrips.length > 0 ? (
           <div>
             <p style={{ fontSize: "11px", color: "#a09088", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 12px" }}>
               Mis viajes
             </p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "10px" }}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {allTrips.map((trip) => (
                 <TripCard
                   key={trip.id}
@@ -276,7 +268,8 @@ export default async function DashboardPage() {
               ))}
               <Link
                 href="/trips/new"
-                style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px", border: "1px dashed #e8e0d8", borderRadius: "16px", minHeight: "120px", textDecoration: "none", color: "#a09088" }}
+                className="flex flex-col items-center justify-center gap-1.5"
+                style={{ border: "1px dashed #e8e0d8", borderRadius: "16px", minHeight: "110px", textDecoration: "none", color: "#a09088" }}
               >
                 <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

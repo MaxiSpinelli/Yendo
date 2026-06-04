@@ -1,4 +1,5 @@
 import Link from "next/link";
+import YendoLogo from "@/components/ui/YendoLogo";
 
 const destinations = [
   { name: "París", color: "#0066ff" },
@@ -32,7 +33,7 @@ const features = [
 ];
 
 const heroImages = [
-   "/landing/toronto.jpg",
+  "/landing/toronto.jpg",
   "/landing/paris.jpg",
   "/landing/rome.jpg",
 ];
@@ -43,9 +44,7 @@ export default function LandingPage() {
 
       {/* Nav */}
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 40px" }}>
-        <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "#0a0a0b" }}>
-          Yendo
-        </span>
+        <YendoLogo height={36} color="#0a0a0b" />
         <Link
           href="/auth/login"
           style={{ border: "1px solid #e0e0e0", borderRadius: "99px", padding: "8px 18px", fontSize: "13px", color: "#0a0a0b", background: "transparent", textDecoration: "none" }}
@@ -56,22 +55,24 @@ export default function LandingPage() {
 
       {/* Hero */}
       <div style={{ margin: "0 24px", borderRadius: "20px", overflow: "hidden", height: "480px", position: "relative", display: "flex", alignItems: "flex-end" }}>
-        {/* Grilla de imágenes */}
         <div style={{ position: "absolute", inset: 0 }} className="hero-grid">
-  {heroImages.map((src, i) => (
-    <div
-      key={i}
-      style={{ backgroundImage: `url('${src}')`, backgroundSize: "cover", backgroundPosition: "center" }}
-      className={i !== 0 ? "hidden sm:block" : ""}
-    />
-  ))}
-</div>
+          {heroImages.map((src, i) => (
+            <div
+              key={i}
+              style={{ backgroundImage: `url('${src}')`, backgroundSize: "cover", backgroundPosition: "center" }}
+              className={i !== 0 ? "hidden sm:block" : ""}
+            />
+          ))}
+        </div>
 
-        {/* Overlay */}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)" }} />
 
-        {/* Contenido */}
         <div style={{ position: "relative", zIndex: 2, padding: "40px", width: "100%" }}>
+          {/* Logo grande sobre el hero */}
+          <div style={{ marginBottom: "24px" }}>
+            <YendoLogo height={56} color="#ffffff" />
+          </div>
+
           <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "99px", padding: "5px 12px", fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "16px" }}>
             ✦ Organización de viajes grupales
           </div>

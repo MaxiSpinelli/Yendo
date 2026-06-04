@@ -11,6 +11,9 @@ import Button from "@/components/ui/Button";
 export default function NewTripPage() {
   const router = useRouter();
 
+  const [userName, setUserName] = useState<string | undefined>(undefined);
+  const [email, setEmail] = useState<string | undefined>(undefined);
+
   const [form, setForm] = useState({
     name: "",
     destination: "",
@@ -21,20 +24,21 @@ export default function NewTripPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadNickname() {
+    async function loadUser() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      setEmail(user.email ?? undefined);
       const { data: profile } = await supabase
         .from("profiles")
-        .select("nickname")
+        .select("nickname, first_name")
         .eq("id", user.id)
         .single();
-      if (profile?.nickname) {
-        setForm((f) => ({ ...f, name: `Viaje de ${profile.nickname}` }));
-      }
+      const displayName = profile?.nickname ?? profile?.first_name ?? undefined;
+      if (displayName) setForm((f) => ({ ...f, name: `Viaje de ${displayName}` }));
+      setUserName(displayName);
     }
-    loadNickname();
+    loadUser();
   }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -63,7 +67,7 @@ export default function NewTripPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#faf7f2", fontFamily: "var(--font-sans)" }}>
-      <Navbar />
+      <Navbar email={email} userName={userName} />
 
       <main style={{ maxWidth: "520px", margin: "0 auto", padding: "40px 24px" }}>
         <Link
