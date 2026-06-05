@@ -7,6 +7,21 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import YendoLogo from "@/components/ui/YendoLogo";
 
+function EyeIcon({ open }: { open: boolean }) {
+  return open ? (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  ) : (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+      <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+  );
+}
+
 function Field({
   label, type = "text", placeholder, value, onChange, required, minLength, autoComplete,
 }: {
@@ -42,6 +57,57 @@ function Field({
   );
 }
 
+function PasswordField({
+  label, placeholder, value, onChange, required, minLength, autoComplete,
+}: {
+  label: string; placeholder?: string; value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean; minLength?: number; autoComplete?: string;
+}) {
+  const [show, setShow] = useState(false);
+
+  return (
+    <div>
+      <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: "#6b5f54" }}>
+        {label}
+      </label>
+      <div className="relative">
+        <input
+          type={show ? "text" : "password"}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          required={required}
+          minLength={minLength}
+          autoComplete={autoComplete}
+          className="w-full text-sm px-3.5 py-2.5 pr-10 rounded-xl outline-none transition-all"
+          style={{ border: "1.5px solid #e8e0d8", background: "#faf7f2", color: "#1a1714" }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "#1a1714";
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(26,23,20,0.08)";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = "#e8e0d8";
+            e.currentTarget.style.boxShadow = "none";
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+          style={{ color: "#a09088" }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = "#1a1714"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = "#a09088"; }}
+          tabIndex={-1}
+          aria-label={show ? "Ocultar contraseña" : "Mostrar contraseña"}
+        >
+          <EyeIcon open={show} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -49,6 +115,7 @@ function LoginForm() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [nickname, setNickname] = useState("");
@@ -58,9 +125,15 @@ function LoginForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError(null);
     setSuccessMsg(null);
+
+    if (mode === "signup" && password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    setLoading(true);
 
     const supabase = createClient();
 
@@ -79,7 +152,14 @@ function LoginForm() {
           last_name: lastName,
           nickname: nickname,
         });
-        setSuccessMsg("Revisá tu correo para confirmar tu cuenta. Luego podés iniciar sesión.");
+
+        if (data.session) {
+          const next = searchParams.get("next") ?? "/dashboard";
+          router.push(next);
+          router.refresh();
+        } else {
+          setSuccessMsg("Revisá tu correo para confirmar tu cuenta. Luego podés iniciar sesión.");
+        }
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -98,6 +178,14 @@ function LoginForm() {
     setLoading(false);
   }
 
+  function handleModeChange(m: "login" | "signup") {
+    setMode(m);
+    setError(null);
+    setSuccessMsg(null);
+    setPassword("");
+    setConfirmPassword("");
+  }
+
   return (
     <div
       className="w-full max-w-sm rounded-2xl p-8"
@@ -108,7 +196,7 @@ function LoginForm() {
           <button
             key={m}
             type="button"
-            onClick={() => { setMode(m); setError(null); setSuccessMsg(null); }}
+            onClick={() => handleModeChange(m)}
             className="flex-1 py-2 text-sm font-medium rounded-lg transition-all"
             style={{
               background: mode === m ? "#faf7f2" : "transparent",
@@ -146,9 +234,8 @@ function LoginForm() {
           <Field label="Email" type="email" placeholder="tu@email.com" value={email}
             onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
 
-          <Field
+          <PasswordField
             label="Contraseña"
-            type="password"
             placeholder={mode === "signup" ? "Mínimo 6 caracteres" : "Tu contraseña"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -156,6 +243,18 @@ function LoginForm() {
             minLength={6}
             autoComplete={mode === "signup" ? "new-password" : "current-password"}
           />
+
+          {mode === "signup" && (
+            <PasswordField
+              label="Confirmar contraseña"
+              placeholder="Repetí tu contraseña"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+              autoComplete="new-password"
+            />
+          )}
 
           {error && (
             <div

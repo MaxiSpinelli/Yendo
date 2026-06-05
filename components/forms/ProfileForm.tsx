@@ -57,7 +57,8 @@ export default function ProfileForm({ profile }: Props) {
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Avatar */}
       <div className="flex justify-center mb-2">
-        <div className="w-16 h-16 rounded-full bg-amber-light flex items-center justify-center text-2xl font-semibold text-amber-hover">
+        <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-semibold"
+style={{ background: "#f0ebe3", color: "#1a1714", border: "1px solid #e8e0d8" }}>
           {initials}
         </div>
       </div>
@@ -83,16 +84,18 @@ export default function ProfileForm({ profile }: Props) {
       />
 
       {error && (
-        <div className="bg-red-50 border border-red-100 rounded-xl p-3 text-xs text-red-600">
-          {error}
-        </div>
-      )}
+  <div className="rounded-xl p-3 text-xs"
+    style={{ background: "#fff8f5", border: "1px solid #e8e0d8", color: "#c4622d" }}>
+    {error}
+  </div>
+)}
 
-      {success && (
-        <div className="bg-green-50 border border-green-100 rounded-xl p-3 text-xs text-green-600">
-          Perfil actualizado correctamente.
-        </div>
-      )}
+{success && (
+  <div className="rounded-xl p-3 text-xs"
+    style={{ background: "#f0ebe3", border: "1px solid #e8e0d8", color: "#2d6a4f" }}>
+    Perfil actualizado correctamente.
+  </div>
+)}
 
       <Button type="submit" loading={loading} className="w-full">
         Guardar cambios

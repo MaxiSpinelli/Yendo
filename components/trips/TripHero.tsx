@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -97,10 +98,13 @@ export default function TripHero({
 
       {/* Fondo */}
       {imageUrl ? (
-        <img
+        <Image
           src={imageUrl}
           alt={trip.destination}
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+          fill
+          priority
+          className="object-cover transition-opacity duration-700"
+          sizes="100vw"
         />
       ) : (
         <div
@@ -111,7 +115,7 @@ export default function TripHero({
 
       {/* Overlay */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 z-[1]"
         style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.75) 100%)" }}
       />
 
@@ -129,7 +133,7 @@ export default function TripHero({
           </Link>
 
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-           <YendoLogo height={28} color="#ffffff" />
+            <YendoLogo height={28} color="#ffffff" />
             <div style={{ width: "1px", height: "18px", background: "rgba(250,247,242,0.25)" }} />
             <button
               onClick={handleSignOut}
