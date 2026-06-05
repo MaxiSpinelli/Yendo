@@ -8,7 +8,7 @@ import TripSidebar from "@/components/trips/TripSidebar";
 import ShareButton from "@/components/trips/ShareButton";
 import { differenceInDays, parseISO } from "date-fns";
 import MobileSidebarDrawer from "@/components/trips/MobileSidebarDrawer";
-
+import ExpensesPanel from "@/components/trips/ExpensesPanel";
 
 interface Props {
   params: Promise<{ tripId: string }>;
@@ -29,19 +29,21 @@ export default async function TripPage({ params }: Props) {
 
   if (!trip) notFound();
 
-  const [flightsRes, accommodationsRes, activitiesRes, membersRes, ownerProfileRes, myTicketsRes] = await Promise.all([
+  const [flightsRes, accommodationsRes, activitiesRes, membersRes, ownerProfileRes, myTicketsRes, expensesRes] = await Promise.all([
     supabase.from("flights").select("*").eq("trip_id", tripId).order("departure_at"),
     supabase.from("accommodations").select("*").eq("trip_id", tripId).order("checkin_at"),
     supabase.from("activities").select("*").eq("trip_id", tripId).order("starts_at"),
     supabase.from("trip_members").select("user_id, role").eq("trip_id", tripId),
     supabase.from("profiles").select("nickname, first_name").eq("id", trip.owner_id).single(),
     supabase.from("personal_tickets").select("cost").eq("trip_id", tripId).eq("user_id", user.id),
+    supabase.from("expenses").select("*").eq("trip_id", tripId).order("created_at"),
   ]);
 
   const flights = flightsRes.data ?? [];
   const accommodations = accommodationsRes.data ?? [];
   const activities = activitiesRes.data ?? [];
   const myTickets = myTicketsRes.data ?? [];
+  const expenses = expensesRes.data ?? [];
 
   const memberIds = (membersRes.data ?? []).map((m) => m.user_id);
   let memberProfiles: { id: string; nickname: string | null; first_name: string | null }[] = [];
@@ -72,6 +74,13 @@ export default async function TripPage({ params }: Props) {
     isOwner: false,
   })),
 ];
+
+const participantCount = allParticipants.length;
+const accommodationCost = accommodations.reduce((sum, a) => {
+  if (!a.cost) return sum;
+  return sum + (a.cost_type === "total" ? a.cost / participantCount : a.cost);
+}, 0);
+const flightCost = myTickets.reduce((sum, t) => sum + (t.cost ?? 0), 0);
 
   const tripDays = differenceInDays(parseISO(trip.end_date), parseISO(trip.start_date)) + 1;
 
@@ -122,34 +131,45 @@ return (
             />
           </div>
 
-          {/* Sidebar — solo desktop */}
-          <aside className="hidden lg:block w-72 flex-shrink-0 sticky top-6">
-            <TripSidebar
-              trip={trip}
-              participants={allParticipants}
-              flights={flights}
-              accommodations={accommodations}
-              activities={activities}
-              cities={cities}
-              myTickets={myTickets}
-              participantCount={allParticipants.length}
-            />
-          </aside>
+         <aside className="hidden lg:flex flex-col gap-4 w-72 flex-shrink-0 sticky top-6">
+  <TripSidebar
+    trip={trip}
+    participants={allParticipants}
+    flights={flights}
+    accommodations={accommodations}
+    activities={activities}
+    cities={cities}
+    myTickets={myTickets}
+    participantCount={allParticipants.length}
+  />
+  <ExpensesPanel
+    tripId={tripId}
+    participants={allParticipants}
+    currentUserId={user.id}
+    initialExpenses={expenses}
+    accommodationCost={accommodationCost}
+    flightCost={flightCost}
+  />
+</aside>
 
         </div>
       </div>
 
       {/* Drawer mobile */}
       <MobileSidebarDrawer
-        trip={trip}
-        participants={allParticipants}
-        flights={flights}
-        accommodations={accommodations}
-        activities={activities}
-        cities={cities}
-        myTickets={myTickets}
-        participantCount={allParticipants.length}
-      />
+  trip={trip}
+  participants={allParticipants}
+  flights={flights}
+  accommodations={accommodations}
+  activities={activities}
+  cities={cities}
+  myTickets={myTickets}
+  participantCount={allParticipants.length}
+  currentUserId={user.id}
+  initialExpenses={expenses}
+  accommodationCost={accommodationCost}
+  flightCost={flightCost}
+/>
 
     </div>
   );

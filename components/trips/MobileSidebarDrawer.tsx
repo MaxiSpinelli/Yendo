@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import TripSidebar from "@/components/trips/TripSidebar";
+import ExpensesPanel from "@/components/trips/ExpensesPanel";
 import type { Trip, Flight, Accommodation, Activity } from "@/lib/types/database";
 
 interface Participant {
@@ -15,6 +16,14 @@ interface MyTicket {
   cost: number | null;
 }
 
+interface Expense {
+  id: string;
+  paid_by: string;
+  description: string;
+  amount: number;
+  created_at: string;
+}
+
 interface Props {
   trip: Trip;
   participants: Participant[];
@@ -24,9 +33,19 @@ interface Props {
   cities: string[];
   myTickets: MyTicket[];
   participantCount: number;
+  currentUserId: string;
+  initialExpenses: Expense[];
+  accommodationCost: number;
+  flightCost: number;
 }
 
-export default function MobileSidebarDrawer(props: Props) {
+export default function MobileSidebarDrawer({
+  currentUserId,
+  initialExpenses,
+  accommodationCost,
+  flightCost,
+  ...props
+}: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -78,7 +97,17 @@ export default function MobileSidebarDrawer(props: Props) {
           <div style={{ width: 36, height: 4, borderRadius: 99, background: "#e8e0d8" }} />
         </div>
 
-        <TripSidebar {...props} />
+        <div className="flex flex-col gap-4">
+          <TripSidebar {...props} />
+          <ExpensesPanel
+            tripId={props.trip.id}
+            participants={props.participants}
+            currentUserId={currentUserId}
+            initialExpenses={initialExpenses}
+            accommodationCost={accommodationCost}
+            flightCost={flightCost}
+          />
+        </div>
       </div>
     </>
   );

@@ -55,15 +55,14 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
     const { error } = await supabase.from("flights").delete().eq("id", flight.id);
     setDeleting(false);
     setConfirmOpen(false);
-    if (error) toast("No se pudo eliminar el vuelo", "error");
-    else { toast("Vuelo eliminado"); onRefresh(); }
+    if (error) toast("No se pudo eliminar el transporte", "error");
+    else { toast("Transporte eliminado"); onRefresh(); }
   }
 
   async function handleSaveTicket() {
     setSavingTicket(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-
     const payload = {
       airline: ticketForm.airline || null,
       flight_number: ticketForm.flight_number || null,
@@ -72,7 +71,6 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
       notes: ticketForm.notes || null,
       cost: ticketForm.cost ? parseFloat(ticketForm.cost) : null,
     };
-
     let error;
     if (ticket) {
       ({ error } = await supabase.from("personal_tickets").update(payload).eq("id", ticket.id));
@@ -97,6 +95,8 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
 
   const depTime = format(parseISO(flight.departure_at), "HH:mm");
   const depDate = format(parseISO(flight.departure_at), "d MMM", { locale: es });
+  const isPlane = flight.transport_type === "plane";
+  const transportIcon = flight.transport_type === "bus" ? "🚌" : flight.transport_type === "car" ? "🚗" : "✈️";
 
   return (
     <>
@@ -115,11 +115,11 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
                   className="px-2 py-0.5 rounded-md text-xs font-semibold"
                   style={{ background: "#2563eb", color: "#faf7f2" }}
                 >
-                  {flight.transport_type === "bus" ? "🚌" : flight.transport_type === "car" ? "🚗" : "✈️"} {flight.flight_number ?? flight.origin}
+                  {transportIcon} {flight.flight_number ?? flight.origin}
                 </div>
-                <span className="text-xs" style={{ color: "#6b5f54" }}>
-                  {flight.airline}
-                </span>
+                {flight.airline && (
+                  <span className="text-xs" style={{ color: "#6b5f54" }}>{flight.airline}</span>
+                )}
               </div>
 
               <div className="flex items-center gap-3">
@@ -132,9 +132,13 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
 
                 <div className="flex-1 flex items-center gap-1.5">
                   <div className="flex-1 h-px" style={{ background: "#b8c8e8" }} />
-                  <svg className="w-4 h-4 flex-shrink-0" style={{ color: "#2563eb" }} fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
-                  </svg>
+                  {isPlane ? (
+                    <svg className="w-4 h-4 flex-shrink-0" style={{ color: "#2563eb" }} fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                    </svg>
+                  ) : (
+                    <span className="text-sm">{transportIcon}</span>
+                  )}
                   <div className="flex-1 h-px" style={{ background: "#b8c8e8" }} />
                 </div>
 
@@ -183,71 +187,89 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
           )}
         </div>
 
-        {/* Separador boarding pass */}
-        <div className="flex items-center px-4">
-          <div className="w-4 h-4 rounded-full flex-shrink-0 -ml-6" style={{ background: "#faf7f2", border: "1px solid #d8cfc8" }} />
-          <div className="flex-1 border-t border-dashed" style={{ borderColor: "#b8c8e8" }} />
-          <div className="w-4 h-4 rounded-full flex-shrink-0 -mr-6" style={{ background: "#faf7f2", border: "1px solid #d8cfc8" }} />
-        </div>
-
-        {/* Pasaje personal */}
-        <div className="px-4 py-3">
-          {ticket ? (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold" style={{ color: "#2563eb" }}>🎫 Mi pasaje</span>
-                <div className="flex gap-2">
-                  <button onClick={() => setTicketOpen(true)} className="text-xs" style={{ color: "#6b5f54" }}>Editar</button>
-                  <span style={{ color: "#d8cfc8" }}>·</span>
-                  <button onClick={() => setConfirmTicketDelete(true)} className="text-xs" style={{ color: "#c4622d" }}>Eliminar</button>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs" style={{ color: "#6b5f54" }}>
-                {ticket.seat && <span>Asiento: <strong style={{ color: "#1a1714" }}>{ticket.seat}</strong></span>}
-                {ticket.pnr && <span>PNR: <strong style={{ color: "#1a1714" }}>{ticket.pnr}</strong></span>}
-                {ticket.airline && <span>Aerolínea: {ticket.airline}</span>}
-                {ticket.flight_number && <span>Vuelo: {ticket.flight_number}</span>}
-                {ticket.cost && (
-                  <span className="col-span-2">
-                    Costo: <strong style={{ color: "#1a1714" }}>${ticket.cost.toLocaleString("es-AR")}</strong>
-                  </span>
-                )}
-                {ticket.notes && <span className="col-span-2">{ticket.notes}</span>}
-              </div>
+        {/* Separador y pasaje personal — no aplica para auto */}
+        {flight.transport_type !== "car" && (
+          <>
+            <div className="flex items-center px-4">
+              <div className="w-4 h-4 rounded-full flex-shrink-0 -ml-6" style={{ background: "#faf7f2", border: "1px solid #d8cfc8" }} />
+              <div className="flex-1 border-t border-dashed" style={{ borderColor: "#b8c8e8" }} />
+              <div className="w-4 h-4 rounded-full flex-shrink-0 -mr-6" style={{ background: "#faf7f2", border: "1px solid #d8cfc8" }} />
             </div>
-          ) : (
-            <button
-              onClick={() => setTicketOpen(true)}
-              className="w-full text-xs font-medium text-left transition-colors"
-              style={{ color: "#6b5f54" }}
-              onMouseEnter={(e) => e.currentTarget.style.color = "#2563eb"}
-              onMouseLeave={(e) => e.currentTarget.style.color = "#6b5f54"}
-            >
-              + Agregar mi pasaje personal
-            </button>
-          )}
-        </div>
+
+            <div className="px-4 py-3">
+              {ticket ? (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold" style={{ color: "#2563eb" }}>🎫 Mi pasaje</span>
+                    <div className="flex gap-2">
+                      <button onClick={() => setTicketOpen(true)} className="text-xs" style={{ color: "#6b5f54" }}>Editar</button>
+                      <span style={{ color: "#d8cfc8" }}>·</span>
+                      <button onClick={() => setConfirmTicketDelete(true)} className="text-xs" style={{ color: "#c4622d" }}>Eliminar</button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs" style={{ color: "#6b5f54" }}>
+                    {ticket.seat && <span>Asiento: <strong style={{ color: "#1a1714" }}>{ticket.seat}</strong></span>}
+                    {ticket.pnr && <span>PNR: <strong style={{ color: "#1a1714" }}>{ticket.pnr}</strong></span>}
+                    {flight.transport_type === "plane" && ticket.airline && <span>Aerolínea: {ticket.airline}</span>}
+                    {flight.transport_type === "plane" && ticket.flight_number && <span>Vuelo: {ticket.flight_number}</span>}
+                    {ticket.cost && (
+                      <span className="col-span-2">
+                        Costo: <strong style={{ color: "#1a1714" }}>${ticket.cost.toLocaleString("es-AR")}</strong>
+                      </span>
+                    )}
+                    {ticket.notes && <span className="col-span-2">{ticket.notes}</span>}
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setTicketOpen(true)}
+                  className="w-full text-xs font-medium text-left transition-colors"
+                  style={{ color: "#6b5f54" }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "#2563eb"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "#6b5f54"}
+                >
+                  + Agregar mi pasaje personal
+                </button>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Editar transporte">
         <FlightForm tripId={flight.trip_id} existing={flight}
-          onSuccess={() => { setEditOpen(false); onRefresh(); toast("Vuelo actualizado"); }}
+          onSuccess={() => { setEditOpen(false); onRefresh(); toast("Transporte actualizado"); }}
           onCancel={() => setEditOpen(false)} />
       </Modal>
 
       <ConfirmDialog open={confirmOpen} title="¿Eliminar transporte?"
         description={`Se eliminará el tramo ${flight.origin} → ${flight.destination}. Esta acción no se puede deshacer.`}
         confirmLabel="Eliminar" onConfirm={handleDelete}
-        onCancel={() => setConfirmOpen(false)} loading={deleting}
-         />
+        onCancel={() => setConfirmOpen(false)} loading={deleting} />
 
       <Modal open={ticketOpen} onClose={() => setTicketOpen(false)} title="Mi pasaje personal">
         <div className="space-y-4">
           <p className="text-xs" style={{ color: "#6b5f54" }}>Solo vos podés ver esta información.</p>
+
           <div className="grid grid-cols-2 gap-3">
-            {[
+            {isPlane && [
               { label: "Aerolínea", key: "airline", placeholder: "Aerolíneas Arg." },
               { label: "Nro. de vuelo", key: "flight_number", placeholder: "AR1234" },
+            ].map(({ label, key, placeholder }) => (
+              <div key={key}>
+                <label className="block text-xs font-medium mb-1" style={{ color: "#6b5f54" }}>{label}</label>
+                <input
+                  className="w-full text-sm px-3 py-2 rounded-lg outline-none transition-all"
+                  style={{ border: "1px solid #e8e0d8", background: "#faf7f2", color: "#1a1714" }}
+                  value={ticketForm[key as keyof typeof ticketForm]}
+                  onChange={(e) => setTicketForm((f) => ({ ...f, [key]: e.target.value }))}
+                  placeholder={placeholder}
+                  onFocus={(e) => e.currentTarget.style.borderColor = "#2563eb"}
+                  onBlur={(e) => e.currentTarget.style.borderColor = "#e8e0d8"}
+                />
+              </div>
+            ))}
+            {[
               { label: "Asiento", key: "seat", placeholder: "14A" },
               { label: "PNR / Código", key: "pnr", placeholder: "ABC123" },
             ].map(({ label, key, placeholder }) => (
@@ -266,7 +288,6 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
             ))}
           </div>
 
-          {/* Costo del pasaje */}
           <div>
             <label className="block text-xs font-medium mb-1" style={{ color: "#6b5f54" }}>
               Costo del pasaje (opcional)
@@ -326,7 +347,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
       </Modal>
 
       <ConfirmDialog open={confirmTicketDelete} title="¿Eliminar tu pasaje?"
-        description="Se eliminará tu información personal de este vuelo."
+        description="Se eliminará tu información personal de este transporte."
         confirmLabel="Eliminar pasaje" onConfirm={handleDeleteTicket}
         onCancel={() => setConfirmTicketDelete(false)} />
     </>

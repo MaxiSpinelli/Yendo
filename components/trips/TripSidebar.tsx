@@ -81,21 +81,6 @@ export default function TripSidebar({
   const typeIcon = { flight: "✈️", accommodation: "🏨", activity: "📍" };
   const typeColor = { flight: "#2563eb", accommodation: "#2d6a4f", activity: "#c4622d" };
 
-  // ── Cálculo de costos ──────────────────────────────────────────────────────
-
-  // Alojamiento: si es total → divide por participantes; si es per_person → usa directo
-  const accommodationCost = accommodations.reduce((sum, a) => {
-    if (!a.cost) return sum;
-    if (a.cost_type === "total") return sum + a.cost / participantCount;
-    return sum + a.cost;
-  }, 0);
-
-  // Vuelos: suma de mis pasajes personales
-  const flightCost = myTickets.reduce((sum, t) => sum + (t.cost ?? 0), 0);
-
-  const totalCost = accommodationCost + flightCost;
-  const hasCosts = accommodationCost > 0 || flightCost > 0;
-
   return (
     <div className="flex flex-col gap-4">
 
@@ -182,59 +167,6 @@ export default function TripSidebar({
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Resumen de costos */}
-      {hasCosts && (
-        <div
-          className="rounded-2xl p-4"
-          style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}
-        >
-          <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#6b5f54" }}>
-            Costos estimados
-          </p>
-          <div className="flex flex-col gap-2.5">
-
-            {accommodationCost > 0 && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">🏨</span>
-                  <span className="text-sm" style={{ color: "#6b5f54" }}>Alojamiento</span>
-                </div>
-                <span className="text-sm font-medium" style={{ color: "#1a1714" }}>
-                  ${formatCost(accommodationCost)}
-                </span>
-              </div>
-            )}
-
-            {flightCost > 0 && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">✈️</span>
-                  <span className="text-sm" style={{ color: "#6b5f54" }}>Vuelos</span>
-                </div>
-                <span className="text-sm font-medium" style={{ color: "#1a1714" }}>
-                  ${formatCost(flightCost)}
-                </span>
-              </div>
-            )}
-
-            <div
-              className="flex items-center justify-between pt-2.5 mt-0.5"
-              style={{ borderTop: "1px solid #e8e0d8" }}
-            >
-              <span className="text-sm font-semibold" style={{ color: "#1a1714" }}>Total por persona</span>
-              <span className="text-sm font-bold" style={{ color: "#1a1714" }}>
-                ${formatCost(totalCost)}
-              </span>
-            </div>
-
-          </div>
-
-          <p className="text-xs mt-3" style={{ color: "#a09088" }}>
-            Estimado en base a los costos cargados. No incluye gastos personales ni actividades.
-          </p>
         </div>
       )}
 

@@ -259,6 +259,29 @@ export interface Database {
         }
         Relationships: []
       }
+      expenses: {
+        Row: {
+          id: string
+          trip_id: string
+          paid_by: string
+          description: string
+          amount: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          trip_id: string
+          paid_by: string
+          description: string
+          amount: number
+          created_at?: string
+        }
+        Update: {
+          description?: string
+          amount?: number
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
@@ -297,3 +320,6 @@ export type TimelineItem =
   | { type: "flight";        sortKey: string; data: Flight }
   | { type: "accommodation"; sortKey: string; data: Accommodation }
   | { type: "activity";      sortKey: string; data: Activity }
+
+
+  export type Expense = Database["public"]["Tables"]["expenses"]["Row"]
