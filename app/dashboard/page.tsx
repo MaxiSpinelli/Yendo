@@ -32,7 +32,8 @@ function fmtTime(iso: string): string {
 function NextTripCard({ trip, participants }: { trip: Trip; participants: string[] }) {
   const cities = getCities(trip.destination);
   const days = getDaysUntil(trip.start_date);
-  const isOngoing = new Date(trip.start_date) <= new Date() && new Date(trip.end_date) >= new Date();
+  const todayStr = new Date().toISOString().split("T")[0];
+const isOngoing = trip.start_date <= todayStr && trip.end_date >= todayStr;
 
   return (
     <Link href={`/trips/${trip.id}`} style={{ textDecoration: "none", display: "block" }}>

@@ -28,15 +28,11 @@ interface TripSidebarProps {
   participantCount: number;
 }
 
-function getCountdown(startDate: string): { label: string; value: string } {
-  const start = parseISO(startDate);
-  const today = new Date();
-  if (isPast(start)) {
-    const end = new Date(startDate);
-    if (isPast(end)) return { label: "Viaje finalizado", value: "✓" };
-    return { label: "En curso", value: "🟢" };
-  }
-  const days = differenceInDays(start, today);
+function getCountdown(startDate: string, endDate: string): { label: string; value: string } {
+  const todayStr = new Date().toISOString().split("T")[0];
+  if (endDate < todayStr) return { label: "Viaje finalizado", value: "✓" };
+  if (startDate <= todayStr) return { label: "En curso", value: "🟢" };
+  const days = differenceInDays(parseISO(startDate), new Date());
   if (days === 0) return { label: "¡Hoy es el día!", value: "🎉" };
   if (days === 1) return { label: "Faltan", value: "1 día" };
   return { label: "Faltan", value: `${days} días` };
@@ -56,7 +52,7 @@ export default function TripSidebar({
   myTickets,
   participantCount,
 }: TripSidebarProps) {
-  const countdown = getCountdown(trip.start_date);
+  const countdown = getCountdown(trip.start_date, trip.end_date);
 
   const allEvents = [
     ...flights.map((f) => ({
