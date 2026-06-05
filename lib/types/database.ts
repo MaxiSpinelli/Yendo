@@ -106,31 +106,34 @@ export interface Database {
         Row: {
           id: string
           trip_id: string
-          airline: string
-          flight_number: string
+          airline: string | null
+          flight_number: string | null
           origin: string
           destination: string
           departure_at: string
+          transport_type: "plane" | "bus" | "car"
           notes: string | null
           created_at: string
         }
         Insert: {
           id?: string
           trip_id: string
-          airline: string
-          flight_number: string
+          airline?: string | null
+          flight_number?: string | null
           origin: string
           destination: string
           departure_at: string
+          transport_type?: "plane" | "bus" | "car"
           notes?: string | null
           created_at?: string
         }
         Update: {
-          airline?: string
-          flight_number?: string
+          airline?: string | null
+          flight_number?: string | null
           origin?: string
           destination?: string
           departure_at?: string
+         transport_type?: "plane" | "bus" | "car"
           notes?: string | null
         }
         Relationships: [

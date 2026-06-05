@@ -115,7 +115,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
                   className="px-2 py-0.5 rounded-md text-xs font-semibold"
                   style={{ background: "#2563eb", color: "#faf7f2" }}
                 >
-                  ✈️ {flight.flight_number}
+                  {flight.transport_type === "bus" ? "🚌" : flight.transport_type === "car" ? "🚗" : "✈️"} {flight.flight_number ?? flight.origin}
                 </div>
                 <span className="text-xs" style={{ color: "#6b5f54" }}>
                   {flight.airline}
@@ -229,16 +229,17 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
         </div>
       </div>
 
-      <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Editar vuelo">
+      <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Editar transporte">
         <FlightForm tripId={flight.trip_id} existing={flight}
           onSuccess={() => { setEditOpen(false); onRefresh(); toast("Vuelo actualizado"); }}
           onCancel={() => setEditOpen(false)} />
       </Modal>
 
-      <ConfirmDialog open={confirmOpen} title="¿Eliminar vuelo?"
-        description={`Se eliminará el vuelo ${flight.airline} ${flight.flight_number} (${flight.origin} → ${flight.destination}). Esta acción no se puede deshacer.`}
-        confirmLabel="Eliminar vuelo" onConfirm={handleDelete}
-        onCancel={() => setConfirmOpen(false)} loading={deleting} />
+      <ConfirmDialog open={confirmOpen} title="¿Eliminar transporte?"
+        description={`Se eliminará el tramo ${flight.origin} → ${flight.destination}. Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar" onConfirm={handleDelete}
+        onCancel={() => setConfirmOpen(false)} loading={deleting}
+         />
 
       <Modal open={ticketOpen} onClose={() => setTicketOpen(false)} title="Mi pasaje personal">
         <div className="space-y-4">

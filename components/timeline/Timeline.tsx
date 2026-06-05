@@ -246,7 +246,7 @@ export default function Timeline({
               className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all"
               style={{ background: "#eef2f8", color: "#2563eb", border: "1px solid #c8d4e8" }}
             >
-              ✈️ Vuelo
+              🚗 Transporte
             </button>
             <button
               onClick={() => setAddModal("accommodation")}
@@ -287,7 +287,7 @@ export default function Timeline({
           <p className="text-4xl mb-4">🗺️</p>
           <h3 className="font-semibold mb-1" style={{ color: "#1a1714" }}>El viaje está vacío</h3>
           <p className="text-sm mb-6" style={{ color: "#6b5f54" }}>
-            Agregá el primer vuelo para empezar a construir tu itinerario.
+            Agregá el primer tramo de transporte para empezar a construir tu itinerario.
           </p>
           <div className="flex items-center justify-center gap-2 flex-wrap">
             <button
@@ -295,7 +295,7 @@ export default function Timeline({
               className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl"
               style={{ background: "#2563eb", color: "#faf7f2" }}
             >
-              ✈️ Agregar vuelo
+              🚗 Agregar transporte
             </button>
             <button
               onClick={() => setAddModal("accommodation")}
@@ -333,7 +333,7 @@ export default function Timeline({
 
       {canEdit && (
         <>
-          <Modal open={addModal === "flight"} onClose={() => setAddModal(null)} title="Agregar vuelo">
+          <Modal open={addModal === "flight"} onClose={() => setAddModal(null)} title="Agregar transporte">
             <FlightForm tripId={tripId}
               onSuccess={() => { setAddModal(null); refresh(); toast("Vuelo agregado"); }}
               onCancel={() => setAddModal(null)} />

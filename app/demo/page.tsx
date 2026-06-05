@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { format, parseISO, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
@@ -177,6 +180,28 @@ function formatCost(n: number) {
 }
 
 export default function DemoPage() {
+  const [activityAdded, setActivityAdded] = useState(false);
+  const [showGuide, setShowGuide] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const ctaRef = useRef<HTMLAnchorElement>(null);
+  const [ctaGlow, setCtaGlow] = useState(false);
+
+  function handleOpenModal() {
+    setShowGuide(false);
+    setShowModal(true);
+  }
+
+  function handleConfirmActivity() {
+    setShowModal(false);
+    setActivityAdded(true);
+    setTimeout(() => {
+      setCtaGlow(true);
+      if (ctaRef.current) {
+        ctaRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 400);
+  }
+
   return (
     <div className="min-h-screen" style={{ background: "#faf7f2", fontFamily: "var(--font-sans)" }}>
 
@@ -275,9 +300,9 @@ export default function DemoPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-stretch overflow-x-auto">
             {[
-              { icon: "✈️", value: DEMO_FLIGHTS.length, label: "Vuelos" },
+              { icon: "🚗", value: DEMO_FLIGHTS.length, label: "Transportes" },
               { icon: "🏨", value: DEMO_ACCOMMODATIONS.length, label: "Alojamientos" },
-              { icon: "🎯", value: DEMO_ACTIVITIES.length, label: "Actividades" },
+              { icon: "🎯", value: DEMO_ACTIVITIES.length + (activityAdded ? 1 : 0), label: "Actividades" },
               { icon: "📍", value: 3, label: "Ciudades" },
               { icon: "🗓", value: tripDays, label: "Días" },
               { icon: "👥", value: DEMO_PARTICIPANTS.length, label: "Viajeros" },
@@ -309,7 +334,9 @@ export default function DemoPage() {
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="font-semibold text-lg" style={{ color: "#1a1714" }}>Itinerario</h2>
-                <p className="text-sm mt-0.5" style={{ color: "#6b5f54" }}>4 destinos · 10 elementos</p>
+                <p className="text-sm mt-0.5" style={{ color: "#6b5f54" }}>
+                  4 destinos · {10 + (activityAdded ? 1 : 0)} elementos
+                </p>
               </div>
               <Link
                 href="/auth/login"
@@ -351,32 +378,20 @@ export default function DemoPage() {
 
                   <div className="ml-14 space-y-3 mb-2">
 
-                    {/* Vuelo — estilo FlightCard */}
+                    {/* Vuelo */}
                     {segment.arrivalFlight && (
-                      <div
-                        className="rounded-2xl overflow-hidden"
-                        style={{ border: "1px solid #d8cfc8", background: "#f5f0ea" }}
-                      >
+                      <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid #d8cfc8", background: "#f5f0ea" }}>
                         <div className="p-4">
                           <div className="flex items-center gap-2 mb-3">
-                            <div
-                              className="px-2 py-0.5 rounded-md text-xs font-semibold"
-                              style={{ background: "#2563eb", color: "#faf7f2" }}
-                            >
+                            <div className="px-2 py-0.5 rounded-md text-xs font-semibold" style={{ background: "#2563eb", color: "#faf7f2" }}>
                               ✈️ {segment.arrivalFlight.flight_number}
                             </div>
-                            <span className="text-xs" style={{ color: "#6b5f54" }}>
-                              {segment.arrivalFlight.airline}
-                            </span>
+                            <span className="text-xs" style={{ color: "#6b5f54" }}>{segment.arrivalFlight.airline}</span>
                           </div>
                           <div className="flex items-center gap-3">
                             <div className="text-center">
-                              <p className="font-bold text-xl tabular-nums" style={{ color: "#1a1714", lineHeight: 1 }}>
-                                {segment.arrivalFlight.origin}
-                              </p>
-                              <p className="text-xs mt-0.5" style={{ color: "#6b5f54" }}>
-                                {fmtTime(segment.arrivalFlight.departure_at)}
-                              </p>
+                              <p className="font-bold text-xl tabular-nums" style={{ color: "#1a1714", lineHeight: 1 }}>{segment.arrivalFlight.origin}</p>
+                              <p className="text-xs mt-0.5" style={{ color: "#6b5f54" }}>{fmtTime(segment.arrivalFlight.departure_at)}</p>
                             </div>
                             <div className="flex-1 flex items-center gap-1.5">
                               <div className="flex-1 h-px" style={{ background: "#b8c8e8" }} />
@@ -386,21 +401,14 @@ export default function DemoPage() {
                               <div className="flex-1 h-px" style={{ background: "#b8c8e8" }} />
                             </div>
                             <div className="text-center">
-                              <p className="font-bold text-xl tabular-nums" style={{ color: "#1a1714", lineHeight: 1 }}>
-                                {segment.arrivalFlight.destination}
-                              </p>
-                              <p className="text-xs mt-0.5" style={{ color: "#6b5f54" }}>
-                                {fmtShort(segment.arrivalFlight.departure_at)}
-                              </p>
+                              <p className="font-bold text-xl tabular-nums" style={{ color: "#1a1714", lineHeight: 1 }}>{segment.arrivalFlight.destination}</p>
+                              <p className="text-xs mt-0.5" style={{ color: "#6b5f54" }}>{fmtShort(segment.arrivalFlight.departure_at)}</p>
                             </div>
                           </div>
                           {segment.arrivalFlight.notes && (
-                            <p className="mt-3 text-xs px-3 py-2 rounded-lg" style={{ background: "#e8e0d8", color: "#6b5f54" }}>
-                              {segment.arrivalFlight.notes}
-                            </p>
+                            <p className="mt-3 text-xs px-3 py-2 rounded-lg" style={{ background: "#e8e0d8", color: "#6b5f54" }}>{segment.arrivalFlight.notes}</p>
                           )}
                         </div>
-                        {/* Separador boarding pass */}
                         <div className="flex items-center px-4">
                           <div className="w-4 h-4 rounded-full flex-shrink-0 -ml-6" style={{ background: "#faf7f2", border: "1px solid #d8cfc8" }} />
                           <div className="flex-1 border-t border-dashed" style={{ borderColor: "#b8c8e8" }} />
@@ -414,34 +422,22 @@ export default function DemoPage() {
                       </div>
                     )}
 
-                    {/* Alojamiento — estilo AccommodationCard */}
+                    {/* Alojamiento */}
                     {segment.accommodation && (
-                      <div
-                        className="rounded-2xl p-4"
-                        style={{ border: "1px solid #c0d8cc", background: "#eaf4f0" }}
-                      >
+                      <div className="rounded-2xl p-4" style={{ border: "1px solid #c0d8cc", background: "#eaf4f0" }}>
                         <div className="flex items-start gap-3">
-                          <div
-                            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
-                            style={{ background: "rgba(45,106,79,0.12)" }}
-                          >
+                          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-lg" style={{ background: "rgba(45,106,79,0.12)" }}>
                             🏨
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs font-semibold px-2 py-0.5 rounded-md" style={{ background: "#2d6a4f", color: "#faf7f2" }}>
-                                Hotel
-                              </span>
+                              <span className="text-xs font-semibold px-2 py-0.5 rounded-md" style={{ background: "#2d6a4f", color: "#faf7f2" }}>Hotel</span>
                               <span className="text-xs" style={{ color: "#2d6a4f" }}>
                                 {differenceInDays(parseISO(segment.accommodation.checkout_at), parseISO(segment.accommodation.checkin_at))} noches
                               </span>
                             </div>
-                            <p className="font-semibold text-sm" style={{ color: "#1a1714" }}>
-                              {segment.accommodation.name}
-                            </p>
-                            <p className="text-xs mt-0.5 truncate" style={{ color: "#6b5f54" }}>
-                              📍 {segment.accommodation.address}
-                            </p>
+                            <p className="font-semibold text-sm" style={{ color: "#1a1714" }}>{segment.accommodation.name}</p>
+                            <p className="text-xs mt-0.5 truncate" style={{ color: "#6b5f54" }}>📍 {segment.accommodation.address}</p>
                             <div className="flex items-center gap-3 mt-2 flex-wrap">
                               <div className="flex items-center gap-1.5">
                                 <span className="text-xs font-medium" style={{ color: "#2d6a4f" }}>In</span>
@@ -454,9 +450,7 @@ export default function DemoPage() {
                               </div>
                             </div>
                             {segment.accommodation.notes && (
-                              <p className="mt-2 text-xs px-3 py-1.5 rounded-lg" style={{ background: "#c8e8d8", color: "#1a4a34" }}>
-                                {segment.accommodation.notes}
-                              </p>
+                              <p className="mt-2 text-xs px-3 py-1.5 rounded-lg" style={{ background: "#c8e8d8", color: "#1a4a34" }}>{segment.accommodation.notes}</p>
                             )}
                             {segment.accommodation.cost && (
                               <p className="mt-2 text-xs" style={{ color: "#a09088" }}>
@@ -474,44 +468,24 @@ export default function DemoPage() {
                       </div>
                     )}
 
-                    {/* Actividades — estilo ActivityCard */}
+                    {/* Actividades */}
                     {segment.dayGroups.map(({ label, activities }) => (
                       <div key={label}>
-                        <p className="text-xs font-semibold uppercase tracking-wider mb-2 mt-4" style={{ color: "#a09088" }}>
-                          {label}
-                        </p>
+                        <p className="text-xs font-semibold uppercase tracking-wider mb-2 mt-4" style={{ color: "#a09088" }}>{label}</p>
                         <div className="space-y-2">
                           {activities.map((activity) => (
-                            <div
-                              key={activity.id}
-                              className="rounded-2xl p-4"
-                              style={{ border: "1px solid #dfc8b8", background: "#f5ede5" }}
-                            >
+                            <div key={activity.id} className="rounded-2xl p-4" style={{ border: "1px solid #dfc8b8", background: "#f5ede5" }}>
                               <div className="flex items-start gap-3">
                                 <div className="flex-shrink-0 text-center w-12">
-                                  <p className="font-bold text-base tabular-nums" style={{ color: "#c4622d", lineHeight: 1 }}>
-                                    {fmtTime(activity.starts_at)}
-                                  </p>
-                                  <p className="text-xs mt-0.5" style={{ color: "#a09088" }}>
-                                    {fmtShort(activity.starts_at)}
-                                  </p>
+                                  <p className="font-bold text-base tabular-nums" style={{ color: "#c4622d", lineHeight: 1 }}>{fmtTime(activity.starts_at)}</p>
+                                  <p className="text-xs mt-0.5" style={{ color: "#a09088" }}>{fmtShort(activity.starts_at)}</p>
                                 </div>
                                 <div className="w-px self-stretch mx-1" style={{ background: "#dfc8b8" }} />
                                 <div className="flex-1 min-w-0">
-                                  <span className="text-xs font-semibold px-2 py-0.5 rounded-md" style={{ background: "#c4622d", color: "#faf7f2" }}>
-                                    Actividad
-                                  </span>
-                                  <p className="font-semibold text-sm mt-1" style={{ color: "#1a1714" }}>
-                                    {activity.name}
-                                  </p>
-                                  {activity.location && (
-                                    <p className="text-xs mt-0.5" style={{ color: "#6b5f54" }}>📍 {activity.location}</p>
-                                  )}
-                                  {activity.notes && (
-                                    <p className="mt-2 text-xs px-3 py-1.5 rounded-lg" style={{ background: "#dfc8b8", color: "#7a3a1a" }}>
-                                      {activity.notes}
-                                    </p>
-                                  )}
+                                  <span className="text-xs font-semibold px-2 py-0.5 rounded-md" style={{ background: "#c4622d", color: "#faf7f2" }}>Actividad</span>
+                                  <p className="font-semibold text-sm mt-1" style={{ color: "#1a1714" }}>{activity.name}</p>
+                                  {activity.location && <p className="text-xs mt-0.5" style={{ color: "#6b5f54" }}>📍 {activity.location}</p>}
+                                  {activity.notes && <p className="mt-2 text-xs px-3 py-1.5 rounded-lg" style={{ background: "#dfc8b8", color: "#7a3a1a" }}>{activity.notes}</p>}
                                 </div>
                               </div>
                             </div>
@@ -519,20 +493,74 @@ export default function DemoPage() {
                         </div>
                       </div>
                     ))}
+
+                    {/* Actividad agregada en demo — solo aparece en París */}
+                    {segment.city === "París" && activityAdded && (
+                      <div
+                        className="rounded-2xl p-4"
+                        style={{
+                          border: "1px solid #dfc8b8",
+                          background: "#f5ede5",
+                          animation: "fadeInUp 0.4s ease",
+                        }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 text-center w-12">
+                            <p className="font-bold text-base tabular-nums" style={{ color: "#c4622d", lineHeight: 1 }}>14:00</p>
+                            <p className="text-xs mt-0.5" style={{ color: "#a09088" }}>14 jul</p>
+                          </div>
+                          <div className="w-px self-stretch mx-1" style={{ background: "#dfc8b8" }} />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-xs font-semibold px-2 py-0.5 rounded-md" style={{ background: "#c4622d", color: "#faf7f2" }}>Actividad</span>
+                            <p className="font-semibold text-sm mt-1" style={{ color: "#1a1714" }}>Visita al Museo de Orsay</p>
+                            <p className="text-xs mt-0.5" style={{ color: "#6b5f54" }}>📍 1 Rue de la Légion d'Honneur, París</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Botón agregar actividad — solo en París, solo si no se agregó */}
+                    {segment.city === "París" && !activityAdded && (
+                      <div className="relative">
+                        {/* Tooltip guía */}
+                        {showGuide && (
+                          <div
+                            className="absolute -top-10 left-0 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap"
+                            style={{ background: "#1a1714", color: "#faf7f2", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
+                          >
+                            <span>👆 Probá agregar una actividad</span>
+                            <div
+                              className="absolute -bottom-1.5 left-6 w-3 h-3 rotate-45"
+                              style={{ background: "#1a1714" }}
+                            />
+                          </div>
+                        )}
+                        <button
+                          onClick={handleOpenModal}
+                          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-medium transition-all"
+                          style={{
+                            border: "2px dashed #c4622d",
+                            color: "#c4622d",
+                            background: "transparent",
+                            animation: "pulse-border 2s ease-in-out infinite",
+                          }}
+                        >
+                          <span style={{ fontSize: 16 }}>+</span>
+                          Agregar actividad
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Sidebar — estilo TripSidebar */}
+          {/* Sidebar */}
           <aside className="hidden lg:flex flex-col gap-4 w-72 flex-shrink-0 sticky top-6">
 
             {/* Countdown */}
-            <div
-              className="rounded-2xl p-5 text-center"
-              style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}
-            >
+            <div className="rounded-2xl p-5 text-center" style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}>
               <p className="text-xs font-medium uppercase tracking-wide mb-1" style={{ color: "#a09088" }}>Faltan</p>
               <p className="font-semibold" style={{ fontSize: 36, color: "#1a1714", lineHeight: 1 }}>37 días</p>
               <p className="text-xs mt-2" style={{ color: "#6b5f54" }}>10 de julio, 2025</p>
@@ -548,9 +576,7 @@ export default function DemoPage() {
                   { icon: "📍", color: "#c4622d", bg: "#c4622d18", label: "Tour por el Louvre", sub: "12 jul · 10:00" },
                 ].map((e) => (
                   <div key={e.label} className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-sm" style={{ background: e.bg }}>
-                      {e.icon}
-                    </div>
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-sm" style={{ background: e.bg }}>{e.icon}</div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate" style={{ color: "#1a1714" }}>{e.label}</p>
                       <p className="text-xs" style={{ color: "#a09088" }}>{e.sub}</p>
@@ -566,17 +592,12 @@ export default function DemoPage() {
               <div className="flex flex-col gap-2.5">
                 {DEMO_PARTICIPANTS.map((p) => (
                   <div key={p.name} className="flex items-center gap-2.5">
-                    <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
-                      style={{ background: "#e8e0d8", color: "#1a1714" }}
-                    >
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0" style={{ background: "#e8e0d8", color: "#1a1714" }}>
                       {p.name[0]}
                     </div>
                     <p className="text-sm font-medium flex-1" style={{ color: "#1a1714" }}>{p.name}</p>
                     {p.isOwner && (
-                      <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: "#e8e0d8", color: "#6b5f54" }}>
-                        owner
-                      </span>
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: "#e8e0d8", color: "#6b5f54" }}>owner</span>
                     )}
                   </div>
                 ))}
@@ -592,40 +613,43 @@ export default function DemoPage() {
                     <span className="text-sm">🏨</span>
                     <span className="text-sm" style={{ color: "#6b5f54" }}>Alojamiento</span>
                   </div>
-                  <span className="text-sm font-medium" style={{ color: "#1a1714" }}>
-                    ${formatCost(accommodationCost)}
-                  </span>
+                  <span className="text-sm font-medium" style={{ color: "#1a1714" }}>${formatCost(accommodationCost)}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-sm">✈️</span>
-                    <span className="text-sm" style={{ color: "#6b5f54" }}>Vuelos</span>
+                    <span className="text-sm" style={{ color: "#6b5f54" }}>Transportes</span>
                   </div>
-                  <span className="text-sm font-medium" style={{ color: "#1a1714" }}>
-                    ${formatCost(flightCost)}
-                  </span>
+                  <span className="text-sm font-medium" style={{ color: "#1a1714" }}>${formatCost(flightCost)}</span>
                 </div>
-                <div
-                  className="flex items-center justify-between pt-2.5 mt-0.5"
-                  style={{ borderTop: "1px solid #e8e0d8" }}
-                >
+                <div className="flex items-center justify-between pt-2.5 mt-0.5" style={{ borderTop: "1px solid #e8e0d8" }}>
                   <span className="text-sm font-semibold" style={{ color: "#1a1714" }}>Total por persona</span>
                   <span className="text-sm font-bold" style={{ color: "#1a1714" }}>${formatCost(totalCost)}</span>
                 </div>
               </div>
-              <p className="text-xs mt-3" style={{ color: "#a09088" }}>
-                Estimado en base a los costos cargados.
-              </p>
+              <p className="text-xs mt-3" style={{ color: "#a09088" }}>Estimado en base a los costos cargados.</p>
             </div>
 
-            {/* CTA */}
+            {/* CTA — se ilumina después de agregar actividad */}
             <Link
+              ref={ctaRef}
               href="/auth/login"
-              className="block text-center py-3.5 rounded-2xl text-sm font-semibold transition-all"
-              style={{ background: "#1a1714", color: "#faf7f2" }}
-              onMouseEnter={undefined}
+              className="block text-center py-3.5 rounded-2xl text-sm font-semibold"
+              style={{
+                background: ctaGlow ? "#c4622d" : "#1a1714",
+                color: "#faf7f2",
+                boxShadow: ctaGlow ? "0 0 0 4px rgba(196,98,45,0.3), 0 4px 20px rgba(196,98,45,0.4)" : "none",
+                transform: ctaGlow ? "scale(1.02)" : "scale(1)",
+                transition: "background 0.5s ease, box-shadow 0.5s ease, transform 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                if (!ctaGlow) (e.currentTarget as HTMLElement).style.background = "#2d2a27";
+              }}
+              onMouseLeave={(e) => {
+                if (!ctaGlow) (e.currentTarget as HTMLElement).style.background = "#1a1714";
+              }}
             >
-              Crear mi viaje gratis →
+              {ctaGlow ? "✨ Creá tu viaje ahora →" : "Crear mi viaje gratis →"}
             </Link>
           </aside>
         </div>
@@ -638,11 +662,129 @@ export default function DemoPage() {
         <Link
           href="/auth/login"
           className="inline-block px-8 py-3 rounded-2xl text-sm font-semibold"
-          style={{ background: "#1a1714", color: "#faf7f2" }}
+          style={{
+            background: ctaGlow ? "#c4622d" : "#1a1714",
+            color: "#faf7f2",
+            transition: "all 0.5s",
+            boxShadow: ctaGlow ? "0 0 0 4px rgba(196,98,45,0.3)" : "none",
+          }}
         >
-          Empezar gratis →
+          {ctaGlow ? "✨ Creá tu viaje ahora →" : "Empezar gratis →"}
         </Link>
       </div>
+
+      {/* Modal demo — igual al real pero sin Supabase */}
+      {showModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+          onClick={(e) => { if (e.currentTarget === e.target) setShowModal(false); }}
+        >
+          <div className="absolute inset-0 backdrop-blur-sm" style={{ background: "rgba(26,23,20,0.6)" }} />
+          <div className="relative w-full max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden" style={{ background: "#faf7f2" }}>
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid #e8e0d8" }}>
+              <h2 className="font-semibold text-base" style={{ color: "#1a1714" }}>Nueva actividad</h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+                style={{ color: "#a09088" }}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-4">
+              {/* Nombre */}
+              <div>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: "#1a1714" }}>
+                  Nombre de la actividad
+                </label>
+                <input
+                  type="text"
+                  defaultValue="Visita al Museo de Orsay"
+                  readOnly
+                  className="w-full px-3 py-2.5 rounded-xl text-sm"
+                  style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }}
+                />
+              </div>
+
+              {/* Fecha y hora */}
+              <div>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: "#1a1714" }}>
+                  Fecha y hora
+                </label>
+                <input
+                  type="text"
+                  defaultValue="14/07/2025 14:00"
+                  readOnly
+                  className="w-full px-3 py-2.5 rounded-xl text-sm"
+                  style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }}
+                />
+              </div>
+
+              {/* Ubicación */}
+              <div>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: "#1a1714" }}>
+                  Ubicación <span style={{ color: "#a09088", fontWeight: 400 }}>(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  defaultValue="1 Rue de la Légion d'Honneur, París"
+                  readOnly
+                  className="w-full px-3 py-2.5 rounded-xl text-sm"
+                  style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }}
+                />
+              </div>
+
+              {/* Notas */}
+              <div>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: "#1a1714" }}>
+                  Notas <span style={{ color: "#a09088", fontWeight: 400 }}>(opcional)</span>
+                </label>
+                <textarea
+                  defaultValue="Reservar entrada online con anticipación"
+                  readOnly
+                  rows={2}
+                  className="w-full px-3 py-2.5 rounded-xl text-sm resize-none"
+                  style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }}
+                />
+              </div>
+
+              {/* Botones */}
+              <div className="flex gap-3 pt-1">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  style={{ border: "1px solid #e8e0d8", background: "transparent", color: "#6b5f54" }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmActivity}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                  style={{ background: "#1a1714", color: "#faf7f2" }}
+                >
+                  Agregar actividad
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-border {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+      `}</style>
 
     </div>
   );
