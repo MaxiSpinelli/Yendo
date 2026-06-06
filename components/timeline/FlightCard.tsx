@@ -35,8 +35,8 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const { data } = await supabase
-      .from("personal_tickets").select("*")
-      .eq("flight_id", flight.id).eq("user_id", user.id).single();
+  .from("personal_tickets").select("*")
+  .eq("flight_id", flight.id).eq("user_id", user.id).maybeSingle();
     if (data) {
       setTicket(data);
       setTicketForm({
