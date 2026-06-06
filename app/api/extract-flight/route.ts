@@ -132,10 +132,3 @@ export async function POST(request: NextRequest) {
 export const maxDuration = 30;
 export const dynamic = 'force-dynamic';
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "10mb",
-    },
-  },
-};

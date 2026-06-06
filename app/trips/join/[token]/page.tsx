@@ -2,10 +2,62 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import JoinSuccess from "@/components/trips/JoinSuccess";
 import PublicTripView from "./PublicTripView";
-import { differenceInDays, parseISO } from "date-fns";
+import { differenceInDays, parseISO, format } from "date-fns";
+import { es } from "date-fns/locale";
+import type { Metadata } from "next";
 
 interface Props {
   params: Promise<{ token: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { token } = await params;
+  const supabase = await createClient();
+
+  const { data: trip } = await supabase
+    .from("trips")
+    .select("name, destination, start_date, end_date")
+    .eq("share_token", token)
+    .single();
+
+  if (!trip) {
+    return {
+      title: "Yendo — Tu viaje en un solo lugar",
+    };
+  }
+
+  const start = format(parseISO(trip.start_date), "d MMM", { locale: es });
+  const end = format(parseISO(trip.end_date), "d MMM yyyy", { locale: es });
+  const days = differenceInDays(parseISO(trip.end_date), parseISO(trip.start_date)) + 1;
+
+  const title = `${trip.name} — Yendo`;
+  const description = `${trip.destination} · ${start} → ${end} · ${days} días. Unite al viaje en Yendo.`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yendo.app";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${appUrl}/trips/join/${token}`,
+      siteName: "Yendo",
+      type: "website",
+      images: [
+        {
+          url: `${appUrl}/og-default.png`,
+          width: 1200,
+          height: 630,
+          alt: `${trip.name} — ${trip.destination}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
 }
 
 export default async function JoinTripPage({ params }: Props) {
@@ -14,7 +66,6 @@ export default async function JoinTripPage({ params }: Props) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Buscar el viaje por share_token
   const { data: trip } = await supabase
     .from("trips")
     .select("*")
@@ -22,14 +73,13 @@ export default async function JoinTripPage({ params }: Props) {
     .single();
 
   if (!trip) {
-  console.log("Trip not found for token:", token);
-  redirect("/dashboard");
-}
+    console.log("Trip not found for token:", token);
+    redirect("/dashboard");
+  }
 
-  // Si no está logueado — mostrar preview público
   if (!user) {
-  console.log("No user — fetching public data for token:", token);
-  console.log("Trip found:", trip?.id);
+    console.log("No user — fetching public data for token:", token);
+    console.log("Trip found:", trip?.id);
     const [flightsRes, accommodationsRes, activitiesRes, membersRes, ownerProfileRes] = await Promise.all([
       supabase.from("flights").select("*").eq("trip_id", trip.id).order("departure_at"),
       supabase.from("accommodations").select("*").eq("trip_id", trip.id).order("checkin_at"),
@@ -56,10 +106,8 @@ export default async function JoinTripPage({ params }: Props) {
     );
   }
 
-  // Si ya es el owner, ir directo
   if (trip.owner_id === user.id) redirect(`/trips/${trip.id}`);
 
-  // Verificar si ya es miembro
   const { data: existing } = await supabase
     .from("trip_members")
     .select("id")
@@ -67,7 +115,6 @@ export default async function JoinTripPage({ params }: Props) {
     .eq("user_id", user.id)
     .single();
 
-  // Si no es miembro, agregarlo
   if (!existing) {
     await supabase.from("trip_members").insert({
       trip_id: trip.id,

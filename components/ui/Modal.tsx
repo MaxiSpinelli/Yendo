@@ -49,19 +49,18 @@ export default function Modal({
       }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-navy-900/60 backdrop-blur-sm animate-fade-in" />
+      <div className="absolute inset-0 bg-[#1a1714]/60 backdrop-blur-sm animate-fade-in" />
 
       {/* Panel */}
       <div
         className={`relative w-full ${sizeClasses[size]} bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-up overflow-hidden`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-navy-100">
-          <h2 className="font-semibold text-navy-900 text-base">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e0d8]">
+          <h2 className="font-semibold text-[#1a1714] text-base">{title}</h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-navy-300 hover:bg-cream-dark hover:text-navy-700 transition-colors"
-            aria-label="Cerrar"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-[#a09088] hover:bg-[#f0ebe3] hover:text-[#1a1714] transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

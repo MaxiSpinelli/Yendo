@@ -6,6 +6,7 @@ import TripStats from "@/components/trips/TripStats";
 import TripSidebar from "@/components/trips/TripSidebar";
 import MobileSidebarDrawer from "@/components/trips/MobileSidebarDrawer";
 import ExpensesPanel from "@/components/trips/ExpensesPanel";
+import TripOnboarding from "@/components/trips/TripOnboarding";
 import { differenceInDays, parseISO } from "date-fns";
 
 interface Props {
@@ -31,7 +32,16 @@ export default async function TripPage({ params }: Props) {
   }
   if (!trip) notFound();
 
-  const [flightsRes, accommodationsRes, activitiesRes, membersRes, ownerProfileRes, myTicketsRes, expensesRes] = await Promise.all([
+  const [
+    flightsRes,
+    accommodationsRes,
+    activitiesRes,
+    membersRes,
+    ownerProfileRes,
+    myTicketsRes,
+    expensesRes,
+    totalTripsRes,
+  ] = await Promise.all([
     supabase.from("flights").select("*").eq("trip_id", tripId).order("departure_at"),
     supabase.from("accommodations").select("*").eq("trip_id", tripId).order("checkin_at"),
     supabase.from("activities").select("*").eq("trip_id", tripId).order("starts_at"),
@@ -39,6 +49,7 @@ export default async function TripPage({ params }: Props) {
     supabase.from("profiles").select("nickname, first_name").eq("id", trip.owner_id).single(),
     supabase.from("personal_tickets").select("cost").eq("trip_id", tripId).eq("user_id", user.id),
     supabase.from("expenses").select("*").eq("trip_id", tripId).order("created_at"),
+    supabase.from("trips").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
   ]);
 
   if (flightsRes.error) throw new Error(`Error al cargar transportes: ${flightsRes.error.message}`);
@@ -103,6 +114,9 @@ export default async function TripPage({ params }: Props) {
     ]),
   ];
 
+  // Onboarding: solo si es el owner y es su único viaje
+  const isFirstTrip = isOwner && (totalTripsRes.count ?? 0) === 1;
+
   return (
     <div className="min-h-screen bg-white">
 
@@ -128,6 +142,15 @@ export default async function TripPage({ params }: Props) {
         <div className="flex gap-10 items-start">
 
           <div className="flex-1 min-w-0">
+            {isFirstTrip && (
+              <TripOnboarding
+                tripId={tripId}
+                hasFlights={flights.length > 0}
+                hasAccommodation={accommodations.length > 0}
+                hasMembers={allParticipants.length > 1}
+                shareToken={trip.share_token}
+              />
+            )}
             <Timeline
               tripId={tripId}
               initialFlights={flights}

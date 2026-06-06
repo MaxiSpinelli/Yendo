@@ -3,9 +3,27 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Yendo — Tu viaje en un solo lugar",
-  description:
-    "Centralizá vuelos, alojamientos y actividades. Compartilo con quienes viajan con vos.",
+  description: "Centralizá vuelos, alojamientos y actividades. Compartilo con quienes viajan con vos.",
   icons: { icon: "/favicon.svg" },
+  openGraph: {
+    title: "Yendo — Tu viaje en un solo lugar",
+    description: "Centralizá vuelos, alojamientos y actividades. Compartilo con quienes viajan con vos.",
+    siteName: "Yendo",
+    type: "website",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://yendo.app"}/og-default.png`,
+        width: 1200,
+        height: 630,
+        alt: "Yendo — Tu viaje en un solo lugar",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Yendo — Tu viaje en un solo lugar",
+    description: "Centralizá vuelos, alojamientos y actividades. Compartilo con quienes viajan con vos.",
+  },
 };
 
 export default function RootLayout({
@@ -20,8 +38,27 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap"
           rel="stylesheet"
         />
+        <meta name="theme-color" content="#1a1714" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Yendo" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+        {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js');
+                });
+              }
+            `,
+          }}
+        />
+      </body>
     </html>
   );
 }

@@ -45,7 +45,7 @@ export function ToastProvider() {
           className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-lg text-sm font-medium pointer-events-auto animate-slide-up
             ${t.type === "success" ? "bg-[#1a3d2b] text-white" : ""}
             ${t.type === "error" ? "bg-red-600 text-white" : ""}
-            ${t.type === "info" ? "bg-navy-900 text-white" : ""}
+           ${t.type === "info" ? "bg-[#1a1714] text-white" : ""}
           `}
         >
           {t.type === "success" && (

@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ url: null }, { status: 401 });
+  }
+
   const query = request.nextUrl.searchParams.get("q") ?? "travel";
   const apiKey = process.env.UNSPLASH_ACCESS_KEY;
 

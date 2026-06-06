@@ -43,7 +43,21 @@ function ShareButton({ shareToken }: { shareToken: string }) {
   return (
     <button
       onClick={handleCopy}
-      style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", fontWeight: 500, color: "#ffffff", background: "rgba(250,247,242,0.15)", border: "1px solid rgba(250,247,242,0.25)", padding: "8px 16px", borderRadius: "99px", cursor: "pointer", transition: "all 0.15s" }}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        fontSize: "13px",
+        fontWeight: 500,
+        color: "#ffffff",
+        background: "rgba(250,247,242,0.15)",
+        border: "1px solid rgba(250,247,242,0.25)",
+        padding: "10px 18px",
+        borderRadius: "99px",
+        cursor: "pointer",
+        transition: "all 0.15s",
+        minHeight: "44px",
+      }}
     >
       {copied ? (
         <>
@@ -94,8 +108,10 @@ export default function TripHero({
   }
 
   return (
-    <div className="relative w-full" style={{ height: "65vh", minHeight: 480 }}>
-
+    <div
+      className="relative w-full"
+      style={{ height: "55vh", minHeight: 380, maxHeight: 520 }}
+    >
       {/* Fondo */}
       {imageUrl ? (
         <Image
@@ -116,28 +132,49 @@ export default function TripHero({
       {/* Overlay */}
       <div
         className="absolute inset-0 z-[1]"
-        style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.75) 100%)" }}
+        style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.8) 100%)" }}
       />
 
-      {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 z-10">
+      {/* Top bar — padding-top para safe area de iOS */}
+      <div className="absolute top-0 left-0 right-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link
             href="/dashboard"
-            style={{ display: "flex", alignItems: "center", gap: "6px", color: "rgba(250,247,242,0.8)", fontSize: "13px", fontWeight: 500, textDecoration: "none", background: "rgba(250,247,242,0.1)", padding: "6px 12px", borderRadius: "99px", border: "1px solid rgba(250,247,242,0.15)" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              color: "rgba(250,247,242,0.85)",
+              fontSize: "13px",
+              fontWeight: 500,
+              textDecoration: "none",
+              background: "rgba(250,247,242,0.1)",
+              padding: "8px 14px",
+              borderRadius: "99px",
+              border: "1px solid rgba(250,247,242,0.15)",
+              minHeight: "44px",
+            }}
           >
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Mis viajes
+            <span className="hidden sm:inline">Mis viajes</span>
           </Link>
 
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <YendoLogo height={28} color="#ffffff" />
+            <YendoLogo height={26} color="#ffffff" />
             <div style={{ width: "1px", height: "18px", background: "rgba(250,247,242,0.25)" }} />
             <button
               onClick={handleSignOut}
-              style={{ fontSize: "12px", color: "rgba(250,247,242,0.6)", background: "transparent", border: "none", cursor: "pointer" }}
+              style={{
+                fontSize: "12px",
+                color: "rgba(250,247,242,0.6)",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                minHeight: "44px",
+                padding: "0 4px",
+              }}
             >
               Salir
             </button>
@@ -146,28 +183,44 @@ export default function TripHero({
       </div>
 
       {/* Contenido inferior */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 pb-8">
+      <div
+        className="absolute bottom-0 left-0 right-0 z-10"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 24px)" }}
+      >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <h1
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(2rem, 5vw, 3.5rem)",
+              fontSize: "clamp(1.6rem, 5vw, 3.5rem)",
               fontWeight: 400,
               color: "#faf7f2",
               lineHeight: 1.1,
               letterSpacing: "-0.02em",
-              margin: "0 0 8px",
+              margin: "0 0 4px",
             }}
           >
             {trip.name}
           </h1>
 
-          <p style={{ color: "rgba(250,247,242,0.8)", fontSize: "18px", margin: "0 0 20px", fontWeight: 300, letterSpacing: "0.02em" }}>
+          <p style={{ color: "rgba(250,247,242,0.75)", fontSize: "15px", margin: "0 0 14px", fontWeight: 300, letterSpacing: "0.02em" }}>
             {trip.destination}
           </p>
 
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+          {/* Pills — scroll horizontal en mobile */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              marginBottom: "16px",
+              overflowX: "auto",
+              WebkitOverflowScrolling: "touch",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              paddingBottom: "2px",
+            }}
+          >
             {[
               `📅 ${formatHeroDate(trip.start_date)} → ${formatHeroDate(trip.end_date)}`,
               `🗓 ${tripDays} ${tripDays === 1 ? "día" : "días"}`,
@@ -176,46 +229,84 @@ export default function TripHero({
             ].map((pill) => (
               <span
                 key={pill}
-                style={{ background: "rgba(250,247,242,0.15)", border: "1px solid rgba(250,247,242,0.2)", color: "#faf7f2", fontSize: "12px", fontWeight: 500, padding: "6px 12px", borderRadius: "99px" }}
+                style={{
+                  background: "rgba(250,247,242,0.15)",
+                  border: "1px solid rgba(250,247,242,0.2)",
+                  color: "#faf7f2",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  padding: "5px 11px",
+                  borderRadius: "99px",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                }}
               >
                 {pill}
               </span>
             ))}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+          {/* Acciones */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {canEdit && <ShareButton shareToken={trip.share_token} />}
             {isOwner && (
               <Link
                 href={`/trips/${trip.id}/edit`}
-                style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", fontWeight: 500, color: "rgba(250,247,242,0.8)", background: "rgba(250,247,242,0.1)", border: "1px solid rgba(250,247,242,0.2)", padding: "8px 16px", borderRadius: "99px", textDecoration: "none" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  color: "rgba(250,247,242,0.8)",
+                  background: "rgba(250,247,242,0.1)",
+                  border: "1px solid rgba(250,247,242,0.2)",
+                  padding: "10px 18px",
+                  borderRadius: "99px",
+                  textDecoration: "none",
+                  minHeight: "44px",
+                }}
               >
                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
-                Editar viaje
+                <span className="hidden sm:inline">Editar viaje</span>
               </Link>
             )}
 
             {participants.length > 0 && (
-              <div style={{ display: "flex", marginLeft: "8px" }}>
+              <div style={{ display: "flex", marginLeft: "4px" }}>
                 {participants.slice(0, 4).map((p, i) => (
                   <div
                     key={p.id}
                     title={p.nickname ?? p.first_name ?? "?"}
-                    style={{ width: "28px", height: "28px", borderRadius: "50%", background: "rgba(250,247,242,0.2)", border: "2px solid rgba(250,247,242,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 600, color: "#faf7f2", marginLeft: i === 0 ? 0 : "-8px" }}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      background: "rgba(250,247,242,0.2)",
+                      border: "2px solid rgba(250,247,242,0.4)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      color: "#faf7f2",
+                      marginLeft: i === 0 ? 0 : "-10px",
+                    }}
                   >
                     {(p.nickname ?? p.first_name ?? "?")[0].toUpperCase()}
                   </div>
                 ))}
                 {participants.length > 4 && (
-                  <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "rgba(250,247,242,0.2)", border: "2px solid rgba(250,247,242,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 600, color: "#faf7f2", marginLeft: "-8px" }}>
+                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(250,247,242,0.2)", border: "2px solid rgba(250,247,242,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 600, color: "#faf7f2", marginLeft: "-10px" }}>
                     +{participants.length - 4}
                   </div>
                 )}
               </div>
             )}
           </div>
+
         </div>
       </div>
     </div>

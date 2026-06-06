@@ -47,7 +47,7 @@ export default function ConfirmDialog({
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={(e) => { if (e.target === overlayRef.current) onCancel(); }}
     >
-      <div className="absolute inset-0 bg-navy-900/60 backdrop-blur-sm animate-fade-in" />
+      <div className="absolute inset-0 bg-[#1a1714]/60 backdrop-blur-sm animate-fade-in" />
 
       <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl animate-slide-up p-6">
         {/* Icon */}
@@ -57,8 +57,8 @@ export default function ConfirmDialog({
           </svg>
         </div>
 
-        <h3 className="text-base font-semibold text-navy-900 mb-1">{title}</h3>
-        <p className="text-sm text-navy-700 mb-6 leading-relaxed">{description}</p>
+        <h3 className="text-base font-semibold text-[#1a1714] mb-1">{title}</h3>
+        <p className="text-sm text-[#6b5f54] mb-6 leading-relaxed">{description}</p>
 
         <div className="flex gap-3">
           <Button
