@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import type { Profile } from "@/lib/types/database";
+import { translateError } from "@/lib/utils/errors";
 
 interface Props {
   profile: Profile | null;
@@ -42,23 +43,24 @@ export default function ProfileForm({ profile }: Props) {
       .eq("id", (await supabase.auth.getUser()).data.user!.id);
 
     if (error) {
-      setError(error.message);
+      setError(translateError(error.message));
     } else {
       setSuccess(true);
     }
     setLoading(false);
   }
 
-  const initials = (
-    (form.nickname || form.first_name || "?")[0]
-  ).toUpperCase();
+  const initials = ((form.nickname || form.first_name || "?")[0]).toUpperCase();
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+
       {/* Avatar */}
       <div className="flex justify-center mb-2">
-        <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-semibold"
-style={{ background: "#f0ebe3", color: "#1a1714", border: "1px solid #e8e0d8" }}>
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-semibold"
+          style={{ background: "#e8e0d8", color: "#1a1714", border: "1px solid #d8cfc8" }}
+        >
           {initials}
         </div>
       </div>
@@ -84,18 +86,22 @@ style={{ background: "#f0ebe3", color: "#1a1714", border: "1px solid #e8e0d8" }}
       />
 
       {error && (
-  <div className="rounded-xl p-3 text-xs"
-    style={{ background: "#fff8f5", border: "1px solid #e8e0d8", color: "#c4622d" }}>
-    {error}
-  </div>
-)}
+        <div
+          className="rounded-xl p-3 text-xs"
+          style={{ background: "#fff8f5", border: "1px solid #f0d0c8", color: "#c4622d" }}
+        >
+          {error}
+        </div>
+      )}
 
-{success && (
-  <div className="rounded-xl p-3 text-xs"
-    style={{ background: "#f0ebe3", border: "1px solid #e8e0d8", color: "#2d6a4f" }}>
-    Perfil actualizado correctamente.
-  </div>
-)}
+      {success && (
+        <div
+          className="rounded-xl p-3 text-xs"
+          style={{ background: "#eaf4f0", border: "1px solid #c0d8cc", color: "#2d6a4f" }}
+        >
+          ✓ Perfil actualizado correctamente.
+        </div>
+      )}
 
       <Button type="submit" loading={loading} className="w-full">
         Guardar cambios

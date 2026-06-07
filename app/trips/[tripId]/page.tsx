@@ -7,6 +7,7 @@ import TripSidebar from "@/components/trips/TripSidebar";
 import MobileTabBar from "@/components/trips/MobileTabBar";
 import ExpensesPanel from "@/components/trips/ExpensesPanel";
 import TripOnboarding from "@/components/trips/TripOnboarding";
+import PageTransition from "@/components/ui/PageTransition";
 import { differenceInDays, parseISO } from "date-fns";
 
 interface Props {
@@ -65,7 +66,6 @@ export default async function TripPage({ params }: Props) {
   const myTickets = myTicketsRes.data;
   const expenses = expensesRes.data;
 
-  // ownerProfile puede fallar sin ser crítico — usamos fallback silencioso solo acá
   const ownerProfile = ownerProfileRes.data ?? null;
 
   const memberIds = membersRes.data.map((m) => m.user_id);
@@ -114,96 +114,94 @@ export default async function TripPage({ params }: Props) {
     ]),
   ];
 
-  // Onboarding: solo si es el owner y es su único viaje
   const isFirstTrip = isOwner && (totalTripsRes.count ?? 0) === 1;
 
   return (
-    <div className="min-h-screen" style={{ background: "#faf7f2" }}>
+    <PageTransition>
+      <div className="min-h-screen" style={{ background: "#faf7f2" }}>
 
-      <TripHero
-        trip={trip}
-        participants={allParticipants}
-        tripDays={tripDays}
-        totalActivities={activities.length}
-        isOwner={isOwner}
-        canEdit={canEdit}
-      />
+        <TripHero
+          trip={trip}
+          participants={allParticipants}
+          tripDays={tripDays}
+          totalActivities={activities.length}
+          isOwner={isOwner}
+          canEdit={canEdit}
+        />
 
-      <TripStats
-        flights={flights.length}
-        accommodations={accommodations.length}
-        activities={activities.length}
-        days={tripDays}
-        cities={cities.length}
-        participants={allParticipants.length}
-      />
+        <TripStats
+          flights={flights.length}
+          accommodations={accommodations.length}
+          activities={activities.length}
+          days={tripDays}
+          cities={cities.length}
+          participants={allParticipants.length}
+        />
 
-      {/* Desktop layout — oculto en mobile */}
-      <div className="hidden lg:block max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="flex gap-10 items-start">
-
-          <div className="flex-1 min-w-0">
-            {isFirstTrip && (
-              <TripOnboarding
+        {/* Desktop layout */}
+        <div className="hidden lg:block max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="flex gap-10 items-start">
+            <div className="flex-1 min-w-0">
+              {isFirstTrip && (
+                <TripOnboarding
+                  tripId={tripId}
+                  hasFlights={flights.length > 0}
+                  hasAccommodation={accommodations.length > 0}
+                  hasMembers={allParticipants.length > 1}
+                  shareToken={trip.share_token}
+                />
+              )}
+              <Timeline
                 tripId={tripId}
-                hasFlights={flights.length > 0}
-                hasAccommodation={accommodations.length > 0}
-                hasMembers={allParticipants.length > 1}
-                shareToken={trip.share_token}
+                initialFlights={flights}
+                initialAccommodations={accommodations}
+                initialActivities={activities}
+                canEdit={canEdit}
+                cities={cities}
               />
-            )}
-            <Timeline
-              tripId={tripId}
-              initialFlights={flights}
-              initialAccommodations={accommodations}
-              initialActivities={activities}
-              canEdit={canEdit}
-              cities={cities}
-            />
+            </div>
+            <aside className="flex flex-col gap-4 w-72 flex-shrink-0 sticky top-6">
+              <TripSidebar
+                trip={trip}
+                participants={allParticipants}
+                flights={flights}
+                accommodations={accommodations}
+                activities={activities}
+                cities={cities}
+                myTickets={myTickets}
+                participantCount={allParticipants.length}
+              />
+              <ExpensesPanel
+                tripId={tripId}
+                participants={allParticipants}
+                currentUserId={user.id}
+                initialExpenses={expenses}
+                accommodationCost={accommodationCost}
+                flightCost={flightCost}
+              />
+            </aside>
           </div>
-
-          <aside className="flex flex-col gap-4 w-72 flex-shrink-0 sticky top-6">
-            <TripSidebar
-              trip={trip}
-              participants={allParticipants}
-              flights={flights}
-              accommodations={accommodations}
-              activities={activities}
-              cities={cities}
-              myTickets={myTickets}
-              participantCount={allParticipants.length}
-            />
-            <ExpensesPanel
-              tripId={tripId}
-              participants={allParticipants}
-              currentUserId={user.id}
-              initialExpenses={expenses}
-              accommodationCost={accommodationCost}
-              flightCost={flightCost}
-            />
-          </aside>
-
         </div>
+
+        {/* Mobile layout — tab bar */}
+        <MobileTabBar
+          trip={trip}
+          participants={allParticipants}
+          flights={flights}
+          accommodations={accommodations}
+          activities={activities}
+          cities={cities}
+          myTickets={myTickets}
+          participantCount={allParticipants.length}
+          currentUserId={user.id}
+          initialExpenses={expenses}
+          accommodationCost={accommodationCost}
+          flightCost={flightCost}
+          canEdit={canEdit}
+          isFirstTrip={isFirstTrip}
+        />
+
       </div>
-
-      {/* Mobile layout — tab bar */}
-      <MobileTabBar
-        trip={trip}
-        participants={allParticipants}
-        flights={flights}
-        accommodations={accommodations}
-        activities={activities}
-        cities={cities}
-        myTickets={myTickets}
-        participantCount={allParticipants.length}
-        currentUserId={user.id}
-        initialExpenses={expenses}
-        accommodationCost={accommodationCost}
-        flightCost={flightCost}
-        canEdit={canEdit}
-        isFirstTrip={isFirstTrip}
-      />
-
-    </div>
+    </PageTransition>
   );
 }

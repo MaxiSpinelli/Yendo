@@ -51,7 +51,7 @@ const tabs: { id: Tab; label: string; icon: (active: boolean) => React.ReactNode
     id: "itinerary",
     label: "Itinerario",
     icon: (active) => (
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
+      <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
     ),
@@ -60,7 +60,7 @@ const tabs: { id: Tab; label: string; icon: (active: boolean) => React.ReactNode
     id: "expenses",
     label: "Gastos",
     icon: (active) => (
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
+      <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
@@ -69,7 +69,7 @@ const tabs: { id: Tab; label: string; icon: (active: boolean) => React.ReactNode
     id: "info",
     label: "Info",
     icon: (active) => (
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
+      <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
@@ -162,9 +162,9 @@ export default function MobileTabBar({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform"
+              className="flex-1 flex flex-col items-center justify-center gap-1"
               style={{
-                padding: "10px 0 8px",
+                padding: "12px 0 10px",
                 color: active ? "#1a1714" : "#a09088",
                 background: "none",
                 border: "none",
@@ -175,7 +175,7 @@ export default function MobileTabBar({
               {tab.icon(active)}
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: active ? 600 : 400,
                   letterSpacing: "0.01em",
                   lineHeight: 1,

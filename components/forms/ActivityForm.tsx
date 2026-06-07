@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { translateError } from "@/lib/utils/errors";
 import type { Activity } from "@/lib/types/database";
 import { isoToLocal, localToISO } from "@/lib/utils/date";
 import Input from "@/components/ui/Input";
@@ -53,7 +54,7 @@ export default function ActivityForm({
       : await supabase.from("activities").insert({ trip_id: tripId, ...shared });
 
     if (error) {
-      setError(error.message);
+      setError(translateError(error.message));
     } else {
       onSuccess();
     }

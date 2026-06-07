@@ -53,10 +53,11 @@ export default function Modal({
 
       {/* Panel */}
       <div
-        className={`relative w-full ${sizeClasses[size]} bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-up overflow-hidden`}
+        className={`relative w-full ${sizeClasses[size]} bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-up flex flex-col`}
+        style={{ maxHeight: "92dvh" }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e0d8]">
+        {/* Header — fijo arriba */}
+        <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-[#e8e0d8]">
           <h2 className="font-semibold text-[#1a1714] text-base">{title}</h2>
           <button
             onClick={onClose}
@@ -68,8 +69,11 @@ export default function Modal({
           </button>
         </div>
 
-        {/* Body */}
-        <div className="px-6 py-5 overflow-y-auto max-h-[85vh] sm:max-h-[80vh]">
+        {/* Body — scrolleable, con padding bottom para que los botones no queden tapados */}
+        <div
+          className="flex-1 overflow-y-auto px-6 py-5"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 88px)" }}
+        >
           {children}
         </div>
       </div>

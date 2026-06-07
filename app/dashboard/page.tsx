@@ -6,6 +6,7 @@ import TripCard from "@/components/trips/TripCard";
 import EmptyState from "@/components/layout/EmptyState";
 import { formatShortDate } from "@/lib/utils/date";
 import type { Trip, Flight, Accommodation, Activity } from "@/lib/types/database";
+import PageTransition from "@/components/ui/PageTransition";
 
 type UpcomingEvent =
   | { type: "flight"; date: string; label: string; sub: string }
@@ -217,6 +218,7 @@ export default async function DashboardPage() {
     <div style={{ minHeight: "100vh", background: "#faf7f2", fontFamily: "var(--font-sans)" }}>
       <Navbar email={user.email} userName={displayName} />
 
+      <PageTransition>
       <main style={{ maxWidth: "900px", margin: "0 auto", padding: "24px 16px" }}>
 
         {/* Header */}
@@ -235,8 +237,7 @@ export default async function DashboardPage() {
           </div>
           <Link
             href="/trips/new"
-            
-            className="btn-touch flex flex-col items-center justify-center gap-1.5"
+            className="hidden sm:inline-flex items-center gap-1.5"
             style={{ background: "#1a1714", color: "#faf7f2", borderRadius: "99px", padding: "10px 20px", fontSize: "13px", fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}
           >
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -270,7 +271,7 @@ export default async function DashboardPage() {
               ))}
               <Link
                 href="/trips/new"
-                className="btn-touch flex flex-col items-center justify-center gap-1.5"
+                className="flex flex-col items-center justify-center gap-1.5"
                 style={{ border: "1px dashed #e8e0d8", borderRadius: "16px", minHeight: "110px", textDecoration: "none", color: "#a09088" }}
               >
                 <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -293,6 +294,7 @@ export default async function DashboardPage() {
           />
         )}
       </main>
+      </PageTransition>
     </div>
   );
 }

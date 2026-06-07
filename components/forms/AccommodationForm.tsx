@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Accommodation } from "@/lib/types/database";
 import { isoToLocal, localToISO } from "@/lib/utils/date";
+import { translateError } from "@/lib/utils/errors";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Button from "@/components/ui/Button";
@@ -67,7 +68,7 @@ export default function AccommodationForm({
       : await supabase.from("accommodations").insert({ trip_id: tripId, ...shared });
 
     if (error) {
-      setError(error.message);
+      setError(translateError(error.message));
     } else {
       onSuccess();
     }
@@ -129,7 +130,7 @@ export default function AccommodationForm({
               key={opt}
               type="button"
               onClick={() => setForm((f) => ({ ...f, cost_type: opt }))}
-              className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95"
+              className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-all"
               style={{
                 background: form.cost_type === opt ? "#faf7f2" : "transparent",
                 color: form.cost_type === opt ? "#1a1714" : "#6b5f54",

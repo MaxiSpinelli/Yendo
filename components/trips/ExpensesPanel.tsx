@@ -127,18 +127,26 @@ export default function ExpensesPanel({
 
   if (!hasAnyCost && !showForm) {
     return (
-      <div className="rounded-2xl p-4" style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}>
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b5f54" }}>Gastos</p>
+      <div className="rounded-2xl p-5" style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}>
+        <p className="text-xs font-semibold uppercase tracking-wide mb-4" style={{ color: "#6b5f54" }}>Gastos</p>
+        <div className="flex flex-col items-center text-center py-2">
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: "#e8e0d8", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#a09088" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium mb-1" style={{ color: "#1a1714" }}>Sin gastos todavía</p>
+          <p className="text-xs mb-4 leading-relaxed" style={{ color: "#a09088" }}>
+            Registrá lo que cada uno pagó y Yendo calcula cómo quedar a mano.
+          </p>
           <button
             onClick={() => setShowForm(true)}
-            className="text-xs font-medium px-2.5 py-1 rounded-lg active:scale-95 transition-transform"
+            className="text-xs font-medium px-4 py-2 rounded-xl active:scale-95 transition-transform"
             style={{ background: "#1a1714", color: "#faf7f2" }}
           >
-            + Agregar
+            + Agregar gasto
           </button>
         </div>
-        <p className="text-xs mt-2" style={{ color: "#a09088" }}>Sin costos cargados todavía.</p>
       </div>
     );
   }
@@ -152,7 +160,7 @@ export default function ExpensesPanel({
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="text-xs font-medium px-2.5 py-1 rounded-lg transition-colors active:scale-95"
+            className="text-xs font-medium px-2.5 py-1 rounded-lg transition-colors"
             style={{ background: "#1a1714", color: "#faf7f2" }}
           >
             + Agregar
@@ -204,7 +212,7 @@ export default function ExpensesPanel({
               <button
                 onClick={() => handleDelete(e.id)}
                 disabled={deletingId === e.id}
-                className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 active:scale-90"
+                className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
                 style={{ color: "#c4622d" }}
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -268,7 +276,7 @@ export default function ExpensesPanel({
           <div className="flex gap-2 pt-1">
             <button
               onClick={() => { setShowForm(false); setDescription(""); setAmount(""); }}
-              className="flex-1 py-2 rounded-xl text-sm font-medium active:scale-95 transition-transform"
+              className="flex-1 py-2 rounded-xl text-sm font-medium"
               style={{ border: "1px solid #e8e0d8", color: "#6b5f54", background: "transparent" }}
             >
               Cancelar
@@ -276,7 +284,7 @@ export default function ExpensesPanel({
             <button
               onClick={handleAdd}
               disabled={loading || !description.trim() || !amount}
-              className="flex-1 py-2 rounded-xl text-sm font-semibold active:scale-95 transition-transform"
+              className="flex-1 py-2 rounded-xl text-sm font-semibold"
               style={{ background: loading ? "#2563eb80" : "#2563eb", color: "white" }}
             >
               {loading ? "Guardando..." : "Guardar"}

@@ -114,7 +114,7 @@ function CitySegmentBlock({ segment, index, isLast, onRefresh, canEdit, onAdd }:
 
       <button
         onClick={() => setCollapsed((c) => !c)}
-        className="relative z-10 w-full flex items-center gap-4 mb-4 group active:scale-[0.98] transition-transform"
+        className="relative z-10 w-full flex items-center gap-4 mb-4 group"
       >
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 font-semibold text-sm transition-all group-hover:scale-105"
@@ -165,7 +165,7 @@ function CitySegmentBlock({ segment, index, isLast, onRefresh, canEdit, onAdd }:
           {canEdit && (
             <button
               onClick={() => onAdd("activity")}
-              className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm transition-all active:scale-95"
+              className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm transition-all"
               style={{ border: "1px dashed #d8cfc8", color: "#a09088", background: "transparent" }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#c4622d"; e.currentTarget.style.color = "#c4622d"; e.currentTarget.style.background = "#f5ede5"; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#d8cfc8"; e.currentTarget.style.color = "#a09088"; e.currentTarget.style.background = "transparent"; }}
@@ -243,21 +243,21 @@ export default function Timeline({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setAddModal("flight")}
-              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all active:scale-95"
+              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all"
               style={{ background: "#eef2f8", color: "#2563eb", border: "1px solid #c8d4e8" }}
             >
               🚗 Transporte
             </button>
             <button
               onClick={() => setAddModal("accommodation")}
-              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all active:scale-95"
+              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all"
               style={{ background: "#eaf4f0", color: "#2d6a4f", border: "1px solid #c0d8cc" }}
             >
               🏨 Hotel
             </button>
             <button
               onClick={() => setAddModal("activity")}
-              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all active:scale-95"
+              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all"
               style={{ background: "#f5ede5", color: "#c4622d", border: "1px solid #dfc8b8" }}
             >
               📍 Actividad
@@ -281,35 +281,47 @@ export default function Timeline({
 
       {totalItems === 0 && canEdit && (
         <div
-          className="text-center py-16 rounded-2xl"
+          className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-2xl"
           style={{ background: "#f0ebe3", border: "1px dashed #d8cfc8" }}
         >
-          <p className="text-4xl mb-4">🗺️</p>
-          <h3 className="font-semibold mb-1" style={{ color: "#1a1714" }}>El viaje está vacío</h3>
-          <p className="text-sm mb-6" style={{ color: "#6b5f54" }}>
-            Agregá el primer tramo de transporte para empezar a construir tu itinerario.
+          {/* Ilustración SVG */}
+          <div style={{ marginBottom: 20 }}>
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="72" height="72" rx="20" fill="#e8e0d8" />
+              <path d="M20 44L28 36L34 42L44 30L52 38" stroke="#a09088" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="52" cy="24" r="6" fill="#2563eb" fillOpacity="0.15" stroke="#2563eb" strokeWidth="1.5"/>
+              <path d="M52 21v3.5l2 1.5" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round"/>
+              <rect x="20" y="48" width="12" height="4" rx="2" fill="#e8e0d8" stroke="#c8bdb5" strokeWidth="1"/>
+              <rect x="36" y="48" width="16" height="4" rx="2" fill="#e8e0d8" stroke="#c8bdb5" strokeWidth="1"/>
+            </svg>
+          </div>
+          <h3 className="font-semibold mb-2" style={{ color: "#1a1714", fontSize: 16 }}>
+            El itinerario está vacío
+          </h3>
+          <p className="text-sm mb-6 max-w-xs leading-relaxed" style={{ color: "#6b5f54" }}>
+            Empezá agregando el primer tramo — un vuelo, bus o auto que los lleve al destino.
           </p>
           <div className="flex items-center justify-center gap-2 flex-wrap">
             <button
               onClick={() => setAddModal("flight")}
-              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl active:scale-95 transition-transform"
+              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2.5 rounded-xl active:scale-95 transition-transform"
               style={{ background: "#2563eb", color: "#faf7f2" }}
             >
-              🚗 Agregar transporte
+              ✈️ Agregar transporte
             </button>
             <button
               onClick={() => setAddModal("accommodation")}
-              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl active:scale-95 transition-transform"
-              style={{ background: "#f0ebe3", color: "#1a1714", border: "1px solid #e8e0d8" }}
+              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2.5 rounded-xl active:scale-95 transition-transform"
+              style={{ background: "#faf7f2", color: "#1a1714", border: "1px solid #e8e0d8" }}
             >
-              🏨 Agregar alojamiento
+              🏨 Alojamiento
             </button>
             <button
               onClick={() => setAddModal("activity")}
-              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl active:scale-95 transition-transform"
-              style={{ background: "#f0ebe3", color: "#1a1714", border: "1px solid #e8e0d8" }}
+              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2.5 rounded-xl active:scale-95 transition-transform"
+              style={{ background: "#faf7f2", color: "#1a1714", border: "1px solid #e8e0d8" }}
             >
-              📍 Agregar actividad
+              📍 Actividad
             </button>
           </div>
         </div>
