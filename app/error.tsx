@@ -29,7 +29,7 @@ export default function TripError({
       <div className="flex gap-3">
         <button
           onClick={reset}
-          className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
+          className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95"
           style={{ background: "#1a1714", color: "#faf7f2" }}
           onMouseEnter={(e) => { e.currentTarget.style.background = "#2d2825"; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = "#1a1714"; }}
@@ -38,7 +38,7 @@ export default function TripError({
         </button>
         <Link
           href="/dashboard"
-          className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
+          className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95"
           style={{ background: "#f0ebe3", color: "#1a1714", border: "1px solid #e8e0d8" }}
         >
           Volver al inicio

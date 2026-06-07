@@ -114,7 +114,7 @@ function CitySegmentBlock({ segment, index, isLast, onRefresh, canEdit, onAdd }:
 
       <button
         onClick={() => setCollapsed((c) => !c)}
-        className="relative z-10 w-full flex items-center gap-4 mb-4 group"
+        className="relative z-10 w-full flex items-center gap-4 mb-4 group active:scale-[0.98] transition-transform"
       >
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 font-semibold text-sm transition-all group-hover:scale-105"
@@ -165,7 +165,7 @@ function CitySegmentBlock({ segment, index, isLast, onRefresh, canEdit, onAdd }:
           {canEdit && (
             <button
               onClick={() => onAdd("activity")}
-              className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm transition-all"
+              className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm transition-all active:scale-95"
               style={{ border: "1px dashed #d8cfc8", color: "#a09088", background: "transparent" }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#c4622d"; e.currentTarget.style.color = "#c4622d"; e.currentTarget.style.background = "#f5ede5"; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#d8cfc8"; e.currentTarget.style.color = "#a09088"; e.currentTarget.style.background = "transparent"; }}
@@ -243,21 +243,21 @@ export default function Timeline({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setAddModal("flight")}
-              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all"
+              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all active:scale-95"
               style={{ background: "#eef2f8", color: "#2563eb", border: "1px solid #c8d4e8" }}
             >
               🚗 Transporte
             </button>
             <button
               onClick={() => setAddModal("accommodation")}
-              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all"
+              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all active:scale-95"
               style={{ background: "#eaf4f0", color: "#2d6a4f", border: "1px solid #c0d8cc" }}
             >
               🏨 Hotel
             </button>
             <button
               onClick={() => setAddModal("activity")}
-              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all"
+              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition-all active:scale-95"
               style={{ background: "#f5ede5", color: "#c4622d", border: "1px solid #dfc8b8" }}
             >
               📍 Actividad
@@ -292,21 +292,21 @@ export default function Timeline({
           <div className="flex items-center justify-center gap-2 flex-wrap">
             <button
               onClick={() => setAddModal("flight")}
-              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl"
+              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl active:scale-95 transition-transform"
               style={{ background: "#2563eb", color: "#faf7f2" }}
             >
               🚗 Agregar transporte
             </button>
             <button
               onClick={() => setAddModal("accommodation")}
-              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl"
+              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl active:scale-95 transition-transform"
               style={{ background: "#f0ebe3", color: "#1a1714", border: "1px solid #e8e0d8" }}
             >
               🏨 Agregar alojamiento
             </button>
             <button
               onClick={() => setAddModal("activity")}
-              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl"
+              className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl active:scale-95 transition-transform"
               style={{ background: "#f0ebe3", color: "#1a1714", border: "1px solid #e8e0d8" }}
             >
               📍 Agregar actividad

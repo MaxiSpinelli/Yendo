@@ -158,12 +158,11 @@ const DEMO_SEGMENTS = [
 const PARTICIPANT_COUNT = DEMO_PARTICIPANTS.length;
 const tripDays = differenceInDays(parseISO(DEMO_TRIP.end_date), parseISO(DEMO_TRIP.start_date)) + 1;
 
-// Costo estimado por persona
 const accommodationCost = DEMO_ACCOMMODATIONS.reduce((sum, a) => {
   if (!a.cost) return sum;
   return sum + (a.cost_type === "total" ? a.cost / PARTICIPANT_COUNT : a.cost);
 }, 0);
-const flightCost = 850; // Demo: pasaje personal hardcodeado
+const flightCost = 850;
 const totalCost = accommodationCost + flightCost;
 
 function fmtTime(iso: string) {
@@ -233,7 +232,7 @@ export default function DemoPage() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <Link
               href="/"
-              className="flex items-center gap-2 text-sm font-medium backdrop-blur-sm bg-white/10 px-3 py-1.5 rounded-full"
+              className="btn-touch flex items-center gap-2 text-sm font-medium backdrop-blur-sm bg-white/10 px-3 py-1.5 rounded-full"
               style={{ color: "rgba(255,255,255,0.8)" }}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -340,7 +339,7 @@ export default function DemoPage() {
               </div>
               <Link
                 href="/auth/login"
-                className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl"
+                className="btn-touch flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl"
                 style={{ background: "#1a1714", color: "#faf7f2" }}
               >
                 Crear mi viaje →
@@ -494,15 +493,11 @@ export default function DemoPage() {
                       </div>
                     ))}
 
-                    {/* Actividad agregada en demo — solo aparece en París */}
+                    {/* Actividad agregada en demo */}
                     {segment.city === "París" && activityAdded && (
                       <div
                         className="rounded-2xl p-4"
-                        style={{
-                          border: "1px solid #dfc8b8",
-                          background: "#f5ede5",
-                          animation: "fadeInUp 0.4s ease",
-                        }}
+                        style={{ border: "1px solid #dfc8b8", background: "#f5ede5", animation: "fadeInUp 0.4s ease" }}
                       >
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 text-center w-12">
@@ -519,25 +514,21 @@ export default function DemoPage() {
                       </div>
                     )}
 
-                    {/* Botón agregar actividad — solo en París, solo si no se agregó */}
+                    {/* Botón agregar actividad */}
                     {segment.city === "París" && !activityAdded && (
                       <div className="relative">
-                        {/* Tooltip guía */}
                         {showGuide && (
                           <div
                             className="absolute -top-10 left-0 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap"
                             style={{ background: "#1a1714", color: "#faf7f2", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
                           >
                             <span>👆 Probá agregar una actividad</span>
-                            <div
-                              className="absolute -bottom-1.5 left-6 w-3 h-3 rotate-45"
-                              style={{ background: "#1a1714" }}
-                            />
+                            <div className="absolute -bottom-1.5 left-6 w-3 h-3 rotate-45" style={{ background: "#1a1714" }} />
                           </div>
                         )}
                         <button
                           onClick={handleOpenModal}
-                          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-medium transition-all"
+                          className="btn-touch w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-medium transition-all"
                           style={{
                             border: "2px dashed #c4622d",
                             color: "#c4622d",
@@ -559,14 +550,12 @@ export default function DemoPage() {
           {/* Sidebar */}
           <aside className="hidden lg:flex flex-col gap-4 w-72 flex-shrink-0 sticky top-6">
 
-            {/* Countdown */}
             <div className="rounded-2xl p-5 text-center" style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}>
               <p className="text-xs font-medium uppercase tracking-wide mb-1" style={{ color: "#a09088" }}>Faltan</p>
               <p className="font-semibold" style={{ fontSize: 36, color: "#1a1714", lineHeight: 1 }}>37 días</p>
               <p className="text-xs mt-2" style={{ color: "#6b5f54" }}>10 de julio, 2025</p>
             </div>
 
-            {/* Próximos eventos */}
             <div className="rounded-2xl p-4" style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}>
               <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#6b5f54" }}>Próximos eventos</p>
               <div className="flex flex-col gap-3">
@@ -586,7 +575,6 @@ export default function DemoPage() {
               </div>
             </div>
 
-            {/* Viajeros */}
             <div className="rounded-2xl p-4" style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}>
               <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#6b5f54" }}>Viajeros</p>
               <div className="flex flex-col gap-2.5">
@@ -604,7 +592,6 @@ export default function DemoPage() {
               </div>
             </div>
 
-            {/* Costos estimados */}
             <div className="rounded-2xl p-4" style={{ background: "#f0ebe3", border: "1px solid #e8e0d8" }}>
               <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#6b5f54" }}>Costos estimados</p>
               <div className="flex flex-col gap-2.5">
@@ -630,11 +617,10 @@ export default function DemoPage() {
               <p className="text-xs mt-3" style={{ color: "#a09088" }}>Estimado en base a los costos cargados.</p>
             </div>
 
-            {/* CTA — se ilumina después de agregar actividad */}
             <Link
               ref={ctaRef}
               href="/auth/login"
-              className="block text-center py-3.5 rounded-2xl text-sm font-semibold"
+              className="btn-touch block text-center py-3.5 rounded-2xl text-sm font-semibold"
               style={{
                 background: ctaGlow ? "#c4622d" : "#1a1714",
                 color: "#faf7f2",
@@ -661,7 +647,7 @@ export default function DemoPage() {
         <p className="text-sm mb-5" style={{ color: "#6b5f54" }}>Creá tu cuenta gratis y organizá tu próximo viaje en minutos.</p>
         <Link
           href="/auth/login"
-          className="inline-block px-8 py-3 rounded-2xl text-sm font-semibold"
+          className="btn-touch inline-block px-8 py-3 rounded-2xl text-sm font-semibold"
           style={{
             background: ctaGlow ? "#c4622d" : "#1a1714",
             color: "#faf7f2",
@@ -673,7 +659,7 @@ export default function DemoPage() {
         </Link>
       </div>
 
-      {/* Modal demo — igual al real pero sin Supabase */}
+      {/* Modal */}
       {showModal && (
         <div
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
@@ -681,12 +667,11 @@ export default function DemoPage() {
         >
           <div className="absolute inset-0 backdrop-blur-sm" style={{ background: "rgba(26,23,20,0.6)" }} />
           <div className="relative w-full max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden" style={{ background: "#faf7f2" }}>
-            {/* Header */}
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid #e8e0d8" }}>
               <h2 className="font-semibold text-base" style={{ color: "#1a1714" }}>Nueva actividad</h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+                className="btn-touch w-8 h-8 flex items-center justify-center rounded-full transition-colors"
                 style={{ color: "#a09088" }}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -695,76 +680,38 @@ export default function DemoPage() {
               </button>
             </div>
 
-            {/* Body */}
             <div className="px-6 py-5 space-y-4">
-              {/* Nombre */}
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: "#1a1714" }}>
-                  Nombre de la actividad
-                </label>
-                <input
-                  type="text"
-                  defaultValue="Visita al Museo de Orsay"
-                  readOnly
-                  className="w-full px-3 py-2.5 rounded-xl text-sm"
-                  style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }}
-                />
+                <label className="block text-sm font-medium mb-1.5" style={{ color: "#1a1714" }}>Nombre de la actividad</label>
+                <input type="text" defaultValue="Visita al Museo de Orsay" readOnly className="w-full px-3 py-2.5 rounded-xl text-sm" style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }} />
               </div>
-
-              {/* Fecha y hora */}
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: "#1a1714" }}>
-                  Fecha y hora
-                </label>
-                <input
-                  type="text"
-                  defaultValue="14/07/2025 14:00"
-                  readOnly
-                  className="w-full px-3 py-2.5 rounded-xl text-sm"
-                  style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }}
-                />
+                <label className="block text-sm font-medium mb-1.5" style={{ color: "#1a1714" }}>Fecha y hora</label>
+                <input type="text" defaultValue="14/07/2025 14:00" readOnly className="w-full px-3 py-2.5 rounded-xl text-sm" style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }} />
               </div>
-
-              {/* Ubicación */}
               <div>
                 <label className="block text-sm font-medium mb-1.5" style={{ color: "#1a1714" }}>
                   Ubicación <span style={{ color: "#a09088", fontWeight: 400 }}>(opcional)</span>
                 </label>
-                <input
-                  type="text"
-                  defaultValue="1 Rue de la Légion d'Honneur, París"
-                  readOnly
-                  className="w-full px-3 py-2.5 rounded-xl text-sm"
-                  style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }}
-                />
+                <input type="text" defaultValue="1 Rue de la Légion d'Honneur, París" readOnly className="w-full px-3 py-2.5 rounded-xl text-sm" style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }} />
               </div>
-
-              {/* Notas */}
               <div>
                 <label className="block text-sm font-medium mb-1.5" style={{ color: "#1a1714" }}>
                   Notas <span style={{ color: "#a09088", fontWeight: 400 }}>(opcional)</span>
                 </label>
-                <textarea
-                  defaultValue="Reservar entrada online con anticipación"
-                  readOnly
-                  rows={2}
-                  className="w-full px-3 py-2.5 rounded-xl text-sm resize-none"
-                  style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }}
-                />
+                <textarea defaultValue="Reservar entrada online con anticipación" readOnly rows={2} className="w-full px-3 py-2.5 rounded-xl text-sm resize-none" style={{ border: "1px solid #e8e0d8", background: "#f0ebe3", color: "#1a1714" }} />
               </div>
-
-              {/* Botones */}
               <div className="flex gap-3 pt-1">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  className="btn-touch flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
                   style={{ border: "1px solid #e8e0d8", background: "transparent", color: "#6b5f54" }}
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleConfirmActivity}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                  className="btn-touch flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
                   style={{ background: "#1a1714", color: "#faf7f2" }}
                 >
                   Agregar actividad

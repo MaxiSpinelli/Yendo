@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SplashScreen from "@/components/ui/SplashScreen";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Yendo — Tu viaje en un solo lugar",
@@ -50,6 +51,7 @@ export default function RootLayout({
       <body className="min-h-screen">
         <SplashScreen />
         {children}
+        <SpeedInsights />
         <script
           dangerouslySetInnerHTML={{
             __html: `

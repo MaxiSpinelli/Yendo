@@ -129,7 +129,7 @@ export default function AccommodationForm({
               key={opt}
               type="button"
               onClick={() => setForm((f) => ({ ...f, cost_type: opt }))}
-              className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-all"
+              className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95"
               style={{
                 background: form.cost_type === opt ? "#faf7f2" : "transparent",
                 color: form.cost_type === opt ? "#1a1714" : "#6b5f54",

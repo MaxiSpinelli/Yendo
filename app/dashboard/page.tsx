@@ -235,7 +235,8 @@ export default async function DashboardPage() {
           </div>
           <Link
             href="/trips/new"
-            className="hidden sm:inline-flex items-center gap-1.5"
+            
+            className="btn-touch flex flex-col items-center justify-center gap-1.5"
             style={{ background: "#1a1714", color: "#faf7f2", borderRadius: "99px", padding: "10px 20px", fontSize: "13px", fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}
           >
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -269,7 +270,7 @@ export default async function DashboardPage() {
               ))}
               <Link
                 href="/trips/new"
-                className="flex flex-col items-center justify-center gap-1.5"
+                className="btn-touch flex flex-col items-center justify-center gap-1.5"
                 style={{ border: "1px dashed #e8e0d8", borderRadius: "16px", minHeight: "110px", textDecoration: "none", color: "#a09088" }}
               >
                 <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

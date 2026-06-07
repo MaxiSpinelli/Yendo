@@ -4,7 +4,7 @@ import Timeline from "@/components/timeline/Timeline";
 import TripHero from "@/components/trips/TripHero";
 import TripStats from "@/components/trips/TripStats";
 import TripSidebar from "@/components/trips/TripSidebar";
-import MobileSidebarDrawer from "@/components/trips/MobileSidebarDrawer";
+import MobileTabBar from "@/components/trips/MobileTabBar";
 import ExpensesPanel from "@/components/trips/ExpensesPanel";
 import TripOnboarding from "@/components/trips/TripOnboarding";
 import { differenceInDays, parseISO } from "date-fns";
@@ -118,7 +118,7 @@ export default async function TripPage({ params }: Props) {
   const isFirstTrip = isOwner && (totalTripsRes.count ?? 0) === 1;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{ background: "#faf7f2" }}>
 
       <TripHero
         trip={trip}
@@ -138,7 +138,8 @@ export default async function TripPage({ params }: Props) {
         participants={allParticipants.length}
       />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* Desktop layout — oculto en mobile */}
+      <div className="hidden lg:block max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex gap-10 items-start">
 
           <div className="flex-1 min-w-0">
@@ -161,7 +162,7 @@ export default async function TripPage({ params }: Props) {
             />
           </div>
 
-          <aside className="hidden lg:flex flex-col gap-4 w-72 flex-shrink-0 sticky top-6">
+          <aside className="flex flex-col gap-4 w-72 flex-shrink-0 sticky top-6">
             <TripSidebar
               trip={trip}
               participants={allParticipants}
@@ -185,7 +186,8 @@ export default async function TripPage({ params }: Props) {
         </div>
       </div>
 
-      <MobileSidebarDrawer
+      {/* Mobile layout — tab bar */}
+      <MobileTabBar
         trip={trip}
         participants={allParticipants}
         flights={flights}
@@ -198,6 +200,8 @@ export default async function TripPage({ params }: Props) {
         initialExpenses={expenses}
         accommodationCost={accommodationCost}
         flightCost={flightCost}
+        canEdit={canEdit}
+        isFirstTrip={isFirstTrip}
       />
 
     </div>

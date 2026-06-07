@@ -156,7 +156,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
               <div className="flex items-center gap-1 flex-shrink-0">
                 <button
                   onClick={() => setEditOpen(true)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors active:scale-90"
                   style={{ color: "#2563eb" }}
                   onMouseEnter={(e) => e.currentTarget.style.background = "#e8f0ff"}
                   onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
@@ -167,7 +167,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
                 </button>
                 <button
                   onClick={() => setConfirmOpen(true)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors active:scale-90"
                   style={{ color: "#2563eb" }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = "#f5ede8"; e.currentTarget.style.color = "#c4622d"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#2563eb"; }}
@@ -202,9 +202,9 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-semibold" style={{ color: "#2563eb" }}>🎫 Mi pasaje</span>
                     <div className="flex gap-2">
-                      <button onClick={() => setTicketOpen(true)} className="text-xs" style={{ color: "#6b5f54" }}>Editar</button>
+                      <button onClick={() => setTicketOpen(true)} className="text-xs active:scale-90 transition-transform" style={{ color: "#6b5f54" }}>Editar</button>
                       <span style={{ color: "#d8cfc8" }}>·</span>
-                      <button onClick={() => setConfirmTicketDelete(true)} className="text-xs" style={{ color: "#c4622d" }}>Eliminar</button>
+                      <button onClick={() => setConfirmTicketDelete(true)} className="text-xs active:scale-90 transition-transform" style={{ color: "#c4622d" }}>Eliminar</button>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs" style={{ color: "#6b5f54" }}>
@@ -223,7 +223,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
               ) : (
                 <button
                   onClick={() => setTicketOpen(true)}
-                  className="w-full text-xs font-medium text-left transition-colors"
+                  className="w-full text-xs font-medium text-left transition-colors active:scale-95"
                   style={{ color: "#6b5f54" }}
                   onMouseEnter={(e) => e.currentTarget.style.color = "#2563eb"}
                   onMouseLeave={(e) => e.currentTarget.style.color = "#6b5f54"}
@@ -325,7 +325,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
           <div className="flex gap-3 pt-1">
             <button
               onClick={() => setTicketOpen(false)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95"
               style={{ border: "1.5px solid #e8e0d8", color: "#6b5f54", background: "#faf7f2" }}
               onMouseEnter={(e) => e.currentTarget.style.background = "#f0ebe3"}
               onMouseLeave={(e) => e.currentTarget.style.background = "#faf7f2"}
@@ -335,7 +335,7 @@ export default function FlightCard({ flight, onRefresh, canEdit = true }: Flight
             <button
               onClick={handleSaveTicket}
               disabled={savingTicket}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95"
               style={{ background: savingTicket ? "#2563eb80" : "#2563eb", color: "white" }}
               onMouseEnter={(e) => { if (!savingTicket) e.currentTarget.style.background = "#1d4ed8"; }}
               onMouseLeave={(e) => { if (!savingTicket) e.currentTarget.style.background = "#2563eb"; }}

@@ -43,6 +43,7 @@ function ShareButton({ shareToken }: { shareToken: string }) {
   return (
     <button
       onClick={handleCopy}
+      className="btn-touch"
       style={{
         display: "flex",
         alignItems: "center",
@@ -55,7 +56,6 @@ function ShareButton({ shareToken }: { shareToken: string }) {
         padding: "10px 18px",
         borderRadius: "99px",
         cursor: "pointer",
-        transition: "all 0.15s",
         minHeight: "44px",
       }}
     >
@@ -135,11 +135,12 @@ export default function TripHero({
         style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.8) 100%)" }}
       />
 
-      {/* Top bar — padding-top para safe area de iOS */}
+      {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link
             href="/dashboard"
+            className="btn-touch"
             style={{
               display: "flex",
               alignItems: "center",
@@ -166,6 +167,7 @@ export default function TripHero({
             <div style={{ width: "1px", height: "18px", background: "rgba(250,247,242,0.25)" }} />
             <button
               onClick={handleSignOut}
+              className="btn-touch"
               style={{
                 fontSize: "12px",
                 color: "rgba(250,247,242,0.6)",
@@ -207,7 +209,7 @@ export default function TripHero({
             {trip.destination}
           </p>
 
-          {/* Pills — scroll horizontal en mobile */}
+          {/* Pills */}
           <div
             style={{
               display: "flex",
@@ -252,6 +254,7 @@ export default function TripHero({
             {isOwner && (
               <Link
                 href={`/trips/${trip.id}/edit`}
+                className="btn-touch"
                 style={{
                   display: "flex",
                   alignItems: "center",

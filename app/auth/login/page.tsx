@@ -94,7 +94,7 @@ function PasswordField({
         <button
           type="button"
           onClick={() => setShow((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors active:scale-90"
           style={{ color: "#a09088" }}
           onMouseEnter={(e) => { e.currentTarget.style.color = "#1a1714"; }}
           onMouseLeave={(e) => { e.currentTarget.style.color = "#a09088"; }}
@@ -197,7 +197,7 @@ function LoginForm() {
             key={m}
             type="button"
             onClick={() => handleModeChange(m)}
-            className="flex-1 py-2 text-sm font-medium rounded-lg transition-all"
+            className="flex-1 py-2 text-sm font-medium rounded-lg transition-all active:scale-95"
             style={{
               background: mode === m ? "#faf7f2" : "transparent",
               color: mode === m ? "#1a1714" : "#a09088",
@@ -268,7 +268,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 mt-2"
+            className="w-full py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95 flex items-center justify-center gap-2 mt-2"
             style={{ background: loading ? "#1a171480" : "#1a1714", color: "#faf7f2" }}
             onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = "#2d2825"; }}
             onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = "#1a1714"; }}

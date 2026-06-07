@@ -132,7 +132,7 @@ export default function ExpensesPanel({
           <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#6b5f54" }}>Gastos</p>
           <button
             onClick={() => setShowForm(true)}
-            className="text-xs font-medium px-2.5 py-1 rounded-lg"
+            className="text-xs font-medium px-2.5 py-1 rounded-lg active:scale-95 transition-transform"
             style={{ background: "#1a1714", color: "#faf7f2" }}
           >
             + Agregar
@@ -152,7 +152,7 @@ export default function ExpensesPanel({
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="text-xs font-medium px-2.5 py-1 rounded-lg transition-colors"
+            className="text-xs font-medium px-2.5 py-1 rounded-lg transition-colors active:scale-95"
             style={{ background: "#1a1714", color: "#faf7f2" }}
           >
             + Agregar
@@ -204,7 +204,7 @@ export default function ExpensesPanel({
               <button
                 onClick={() => handleDelete(e.id)}
                 disabled={deletingId === e.id}
-                className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 active:scale-90"
                 style={{ color: "#c4622d" }}
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -268,7 +268,7 @@ export default function ExpensesPanel({
           <div className="flex gap-2 pt-1">
             <button
               onClick={() => { setShowForm(false); setDescription(""); setAmount(""); }}
-              className="flex-1 py-2 rounded-xl text-sm font-medium"
+              className="flex-1 py-2 rounded-xl text-sm font-medium active:scale-95 transition-transform"
               style={{ border: "1px solid #e8e0d8", color: "#6b5f54", background: "transparent" }}
             >
               Cancelar
@@ -276,7 +276,7 @@ export default function ExpensesPanel({
             <button
               onClick={handleAdd}
               disabled={loading || !description.trim() || !amount}
-              className="flex-1 py-2 rounded-xl text-sm font-semibold"
+              className="flex-1 py-2 rounded-xl text-sm font-semibold active:scale-95 transition-transform"
               style={{ background: loading ? "#2563eb80" : "#2563eb", color: "white" }}
             >
               {loading ? "Guardando..." : "Guardar"}

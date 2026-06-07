@@ -48,6 +48,7 @@ export default function TripOnboarding({
       action: (
         <Link
           href={`/trips/${tripId}`}
+          className="btn-touch"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -75,6 +76,7 @@ export default function TripOnboarding({
       action: (
         <button
           onClick={handleCopy}
+          className="btn-touch"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -114,6 +116,7 @@ export default function TripOnboarding({
       action: (
         <Link
           href={`/trips/${tripId}`}
+          className="btn-touch"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -160,6 +163,7 @@ export default function TripOnboarding({
         </div>
         <button
           onClick={() => setDismissed(true)}
+          className="btn-touch"
           style={{
             background: "none",
             border: "none",
@@ -202,7 +206,6 @@ export default function TripOnboarding({
               opacity: step.done ? 0.5 : 1,
             }}
           >
-            {/* Número o check */}
             <div
               style={{
                 width: "24px",
@@ -227,7 +230,6 @@ export default function TripOnboarding({
               )}
             </div>
 
-            {/* Texto */}
             <div style={{ flex: 1, minWidth: 0 }}>
               <p
                 style={{
@@ -247,7 +249,6 @@ export default function TripOnboarding({
               )}
             </div>
 
-            {/* Acción */}
             {!step.done && (
               <div style={{ flexShrink: 0 }}>
                 {step.action}

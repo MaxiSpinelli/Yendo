@@ -103,7 +103,7 @@ export default function AccommodationCard({ accommodation, onRefresh, canEdit = 
             <div className="flex items-center gap-1 flex-shrink-0">
               <button
                 onClick={() => setEditOpen(true)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
+                className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors active:scale-90"
                 style={{ color: "#2d6a4f" }}
                 onMouseEnter={(e) => e.currentTarget.style.background = "#c0d8cc"}
                 onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
@@ -114,7 +114,7 @@ export default function AccommodationCard({ accommodation, onRefresh, canEdit = 
               </button>
               <button
                 onClick={() => setConfirmOpen(true)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
+                className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors active:scale-90"
                 style={{ color: "#2d6a4f" }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = "#f5ede8"; e.currentTarget.style.color = "#c4622d"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#2d6a4f"; }}

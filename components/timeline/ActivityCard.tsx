@@ -85,7 +85,7 @@ export default function ActivityCard({ activity, onRefresh, canEdit = true }: Ac
             <div className="flex items-center gap-1 flex-shrink-0">
               <button
                 onClick={() => setEditOpen(true)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
+                className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors active:scale-90"
                 style={{ color: "#c4622d" }}
                 onMouseEnter={(e) => e.currentTarget.style.background = "#dfc8b8"}
                 onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
@@ -96,7 +96,7 @@ export default function ActivityCard({ activity, onRefresh, canEdit = true }: Ac
               </button>
               <button
                 onClick={() => setConfirmOpen(true)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
+                className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors active:scale-90"
                 style={{ color: "#c4622d" }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = "#f5ede8"; e.currentTarget.style.color = "#8a2a0a"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#c4622d"; }}

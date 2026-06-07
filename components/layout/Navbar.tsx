@@ -76,7 +76,7 @@ export default function Navbar({ email, userName, breadcrumb }: NavbarProps) {
           {/* User menu */}
           <div ref={dropdownRef} style={{ position: "relative" }}>
             <button
-              onClick={() => setOpen((v) => !v)}
+              onClick={() => setOpen((v) => !v)} className="btn-touch"
               style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "transparent", border: "1px solid #e8e0d8", borderRadius: "99px", padding: "6px 12px 6px 6px", cursor: "pointer" }}
             >
               <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: "#1a1714", color: "#faf7f2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: 500, flexShrink: 0 }}>
@@ -120,6 +120,7 @@ export default function Navbar({ email, userName, breadcrumb }: NavbarProps) {
 
                 <button
                   onClick={handleSignOut}
+                  className="btn-touch"
                   style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px", borderRadius: "8px", fontSize: "13px", color: "#c4622d", background: "transparent", border: "none", cursor: "pointer", width: "100%" }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = "#f5ede8")}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}

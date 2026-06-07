@@ -158,7 +158,7 @@ export default function FlightForm({ tripId, existing, onSuccess, onCancel }: Fl
               key={opt.value}
               type="button"
               onClick={() => set("transport_type", opt.value)}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95"
               style={{
                 border: form.transport_type === opt.value ? "2px solid #2563eb" : "1.5px solid #e8e0d8",
                 background: form.transport_type === opt.value ? "#eef3ff" : "#faf7f2",
@@ -186,7 +186,7 @@ export default function FlightForm({ tripId, existing, onSuccess, onCancel }: Fl
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={extracting}
-            className="w-full flex items-center justify-center gap-3 px-4 py-4 rounded-2xl transition-all"
+            className="w-full flex items-center justify-center gap-3 px-4 py-4 rounded-2xl transition-all active:scale-[0.98]"
             style={{
               border: extracting ? "2px dashed #2563eb40" : fileName && !extractError ? "2px dashed #2d6a4f60" : "2px dashed #e8e0d8",
               background: extracting ? "#f0f4ff" : fileName && !extractError ? "#f0faf7" : "#faf7f2",
@@ -342,7 +342,7 @@ export default function FlightForm({ tripId, existing, onSuccess, onCancel }: Fl
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+          className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95"
           style={{ border: "1.5px solid #e8e0d8", color: "#6b5f54", background: "#faf7f2" }}
           onMouseEnter={(e) => e.currentTarget.style.background = "#f0ebe3"}
           onMouseLeave={(e) => e.currentTarget.style.background = "#faf7f2"}
@@ -352,7 +352,7 @@ export default function FlightForm({ tripId, existing, onSuccess, onCancel }: Fl
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2"
+          className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95 flex items-center justify-center gap-2"
           style={{ background: loading ? "#2563eb80" : "#2563eb", color: "white" }}
           onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = "#1d4ed8"; }}
           onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = "#2563eb"; }}

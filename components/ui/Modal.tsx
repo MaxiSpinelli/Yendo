@@ -60,7 +60,7 @@ export default function Modal({
           <h2 className="font-semibold text-[#1a1714] text-base">{title}</h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-[#a09088] hover:bg-[#f0ebe3] hover:text-[#1a1714] transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-[#a09088] hover:bg-[#f0ebe3] hover:text-[#1a1714] transition-colors active:scale-90"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

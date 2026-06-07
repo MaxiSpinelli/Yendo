@@ -47,6 +47,7 @@ export default function LandingPage() {
         <YendoLogo height={36} color="#0a0a0b" />
         <Link
           href="/auth/login"
+          className="btn-touch"
           style={{ border: "1px solid #e0e0e0", borderRadius: "99px", padding: "8px 18px", fontSize: "13px", color: "#0a0a0b", background: "transparent", textDecoration: "none" }}
         >
           Iniciar sesión
@@ -89,12 +90,14 @@ export default function LandingPage() {
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             <Link
               href="/auth/login"
+              className="btn-touch"
               style={{ background: "#ffffff", color: "#0a0a0b", border: "none", borderRadius: "99px", padding: "12px 24px", fontSize: "14px", fontWeight: 500, textDecoration: "none", display: "inline-block" }}
             >
               Crear mi primer viaje →
             </Link>
             <Link
               href="/demo"
+              className="btn-touch"
               style={{ background: "rgba(255,255,255,0.12)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.3)", borderRadius: "99px", padding: "12px 24px", fontSize: "14px", textDecoration: "none", display: "inline-block" }}
             >
               Ver demo
@@ -136,7 +139,7 @@ export default function LandingPage() {
             ¿A dónde vas<br />este año?
           </h3>
           <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.5)", margin: "0 0 16px" }}>
-            Más de 200 viajes organizados este mes
+            
           </p>
           <div style={{ display: "flex" }}>
             {["MG", "AS", "LR", "JP"].map((initials, i) => (
@@ -151,6 +154,7 @@ export default function LandingPage() {
         </div>
         <Link
           href="/auth/login"
+          className="btn-touch"
           style={{ background: "#f5c842", color: "#0a0a0b", border: "none", borderRadius: "99px", padding: "14px 28px", fontSize: "14px", fontWeight: 500, textDecoration: "none", display: "inline-block", whiteSpace: "nowrap" }}
         >
           Empezar gratis →
