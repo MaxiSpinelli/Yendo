@@ -1,6 +1,5 @@
 import Link from "next/link";
 import YendoLogo from "@/components/ui/YendoLogo";
-import PageTransition from "@/components/ui/PageTransition";
 
 const destinations = [
   { name: "París", color: "#0066ff" },
@@ -41,7 +40,6 @@ const heroImages = [
 
 export default function LandingPage() {
   return (
-    <PageTransition>
     <div style={{ minHeight: "100vh", background: "#ffffff", fontFamily: "var(--font-sans)" }}>
 
       {/* Nav */}
@@ -132,28 +130,32 @@ export default function LandingPage() {
       </div>
 
       {/* CTA final */}
-      <div style={{ margin: "20px 40px 40px", background: "#0a0a0b", borderRadius: "20px", padding: "40px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "24px", flexWrap: "wrap" }}>
-        <div>
-          <h3 style={{ fontFamily: "var(--font-display)", fontSize: "32px", fontWeight: 700, color: "#ffffff", margin: "0 0 8px", fontStyle: "italic" }}>
-            ¿A dónde vas<br />este año?
-          </h3>
-          <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.5)", margin: "0 0 16px" }}>
-            Más de 200 viajes organizados este mes
-          </p>
-          <div style={{ display: "flex" }}>
-            {["MG", "AS", "LR", "JP"].map((initials, i) => (
-              <div
-                key={initials}
-                style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #0a0a0b", marginLeft: i === 0 ? 0 : "-8px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 500, color: "#fff", background: ["#0066ff", "#f5620f", "#00a67e", "#8b5cf6"][i] }}
+      <div style={{ margin: "20px 16px 40px", background: "#1a1714", borderRadius: "20px", padding: "40px 32px", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "24px" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center" }}>
+            {[
+              { emoji: "✈️", text: "Sin más PDFs perdidos" },
+              { emoji: "💬", text: "Sin caos en el grupo de WhatsApp" },
+              { emoji: "🗓", text: "Sin hojas de cálculo" },
+            ].map((item) => (
+              <span
+                key={item.text}
+                style={{ background: "rgba(250,247,242,0.08)", border: "1px solid rgba(250,247,242,0.12)", borderRadius: "99px", padding: "6px 14px", fontSize: "13px", color: "rgba(250,247,242,0.7)", whiteSpace: "nowrap" }}
               >
-                {initials}
-              </div>
+                {item.emoji} {item.text}
+              </span>
             ))}
           </div>
+          <h3 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 5vw, 36px)", fontWeight: 400, color: "#faf7f2", margin: 0, fontStyle: "italic", lineHeight: 1.2 }}>
+            Todo el viaje en un solo lugar.
+          </h3>
+          <p style={{ fontSize: "14px", color: "rgba(250,247,242,0.45)", margin: 0, maxWidth: "320px", lineHeight: 1.6 }}>
+            Gratis para empezar. Sin tarjeta de crédito.
+          </p>
         </div>
         <Link
           href="/auth/login"
-          style={{ background: "#f5c842", color: "#0a0a0b", border: "none", borderRadius: "99px", padding: "14px 28px", fontSize: "14px", fontWeight: 500, textDecoration: "none", display: "inline-block", whiteSpace: "nowrap" }}
+          style={{ background: "#f5c842", color: "#1a1714", borderRadius: "99px", padding: "14px 32px", fontSize: "14px", fontWeight: 600, textDecoration: "none", display: "inline-block", whiteSpace: "nowrap" }}
         >
           Empezar gratis →
         </Link>
@@ -165,6 +167,5 @@ export default function LandingPage() {
       </footer>
 
     </div>
-    </PageTransition>
   );
 }
